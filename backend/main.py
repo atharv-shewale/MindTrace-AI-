@@ -38,10 +38,18 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+@app.get("/")
+async def root():
+    return {"status": "online", "message": "MindTrace AI+ Backend is active"}
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
