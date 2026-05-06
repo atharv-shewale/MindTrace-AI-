@@ -15,21 +15,20 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Handle startup and shutdown"""
-    # Startup
     logger.info("Starting MINDTRACE AI+ Backend...")
-    await connect_to_mongo()
-    await emotion_engine.initialize()
-    logger.info("[OK] All services initialized")
+    try:
+        await connect_to_mongo()
+        await emotion_engine.initialize()
+        logger.info("[OK] All services initialized")
+    except Exception as e:
+        logger.error(f"Startup failure: {e}")
     yield
-    # Shutdown
     logger.info("Shutting down MINDTRACE AI+ Backend...")
     await close_mongo_connection()
     logger.info("[OK] Shutdown complete")
-
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -38,22 +37,26 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-@app.get("/")
-async def root():
-    return {"status": "online", "message": "MindTrace AI+ Backend is active"}
-
-@app.get("/health")
-async def health():
-    return {"status": "healthy"}
-
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+async def root():
+    return {
+        "message": "Welcome to MINDTRACE AI+",
+        "status": "operational",
+        "version": "1.0.0"
+    }
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
 
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
@@ -68,27 +71,6 @@ app.include_router(safe_links.router, prefix="/api/safe-links", tags=["Safe Link
 app.include_router(companion.router, prefix="/api/companion", tags=["Companion"])
 app.include_router(websockets.router, prefix="/api/ws", tags=["WebSockets"])
 
-
-@app.get("/")
-async def root():
-    return {
-        "message": "Welcome to MINDTRACE AI+",
-        "description": "Realtime Emotional Intelligence and Adaptive Wellness Platform",
-        "status": "operational",
-        "version": "1.0.0"
-    }
-
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
-
-
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=settings.DEBUG
-    )
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=settings.DEBUG)
