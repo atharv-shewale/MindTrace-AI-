@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import Optional, List, Any
-from pydantic import validator
+from pydantic import validator, field_validator
 import os
 
 
@@ -32,28 +32,28 @@ class Settings(BaseSettings):
     WINDOW_SIZE: int = 3600  # 1 hour in seconds
     
     # CORS Origins - Whitelist for Netlify and Local
-    CORS_ORIGINS: List[str] = [
+    CORS_ORIGINS: Any = [
         "https://mindtrace-frontend.netlify.app",
         "http://localhost:3000",
         "http://localhost:5173",
         "https://mindtrace-backend-75jm.onrender.com"
     ]
 
-    @validator("CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: str | List[str]) -> List[str]:
-        if isinstance(v, str) and not v.startswith("["):
-            # Handle comma-separated string from Render Env Vars
-            return [i.strip().rstrip('/') for i in v.split(",")]
-        elif isinstance(v, str) and v.startswith("["):
-            # Handle JSON array string
-            import json
-            try:
-                parsed = json.loads(v)
-                return [i.strip().rstrip('/') for i in parsed]
-            except:
-                return [v.strip().rstrip('/')]
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: Any) -> List[str]:
+        if isinstance(v, str):
+            if v.startswith("[") and v.endswith("]"):
+                import json
+                try:
+                    parsed = json.loads(v)
+                    if isinstance(parsed, list):
+                        return [i.strip().rstrip('/') for i in parsed]
+                except Exception:
+                    pass
+            # Handle comma-separated string
+            return [i.strip().rstrip('/') for i in v.split(",") if i.strip()]
         elif isinstance(v, list):
-            # Clean list items
             return [str(i).strip().rstrip('/') for i in v]
         return v
 
