@@ -120,7 +120,7 @@ const Settings = ({ user, onLogout }) => {
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-gray-400 text-sm font-bold tracking-widest uppercase mb-1">Configuration</h2>
-          <h1 className="text-4xl font-black tracking-tight">System Core</h1>
+          <h1 className="text-4xl font-black tracking-tight">Application Settings</h1>
         </div>
         <button
           onClick={onLogout}
@@ -160,7 +160,7 @@ const Settings = ({ user, onLogout }) => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black tracking-widest text-gray-600 uppercase ml-1">Full Identity</label>
+                <label className="text-[10px] font-black tracking-widest text-gray-600 uppercase ml-1">Full Name</label>
                 <input
                   type="text"
                   value={profile.full_name || profile.name || ''}
@@ -169,7 +169,7 @@ const Settings = ({ user, onLogout }) => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black tracking-widest text-gray-600 uppercase ml-1">Age Factor</label>
+                <label className="text-[10px] font-black tracking-widest text-gray-600 uppercase ml-1">Age</label>
                 <input
                   type="number"
                   value={profile.age || ''}
@@ -178,7 +178,7 @@ const Settings = ({ user, onLogout }) => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black tracking-widest text-gray-600 uppercase ml-1">Temporal Zone</label>
+                <label className="text-[10px] font-black tracking-widest text-gray-600 uppercase ml-1">Timezone</label>
                 <select
                   value={profile.timezone || 'UTC'}
                   onChange={(e) => handleProfileChange('timezone', e.target.value)}
@@ -206,7 +206,7 @@ const Settings = ({ user, onLogout }) => {
                 disabled={!formChanged || loading}
                 className="px-8 py-3 bg-indigo-600 rounded-2xl text-[10px] font-black tracking-widest uppercase text-white shadow-[0_10px_20px_rgba(99,102,241,0.3)] hover:bg-indigo-500 transition-all disabled:opacity-50"
               >
-                {loading ? 'Processing...' : 'Sync Identity'}
+                {loading ? 'Processing...' : 'Save Profile'}
               </button>
             </div>
           </div>
@@ -230,12 +230,12 @@ const Settings = ({ user, onLogout }) => {
             <div className="bento-card">
               <div className="flex items-center gap-2 mb-4">
                 <Brain className="w-4 h-4 text-indigo-500" />
-                <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Passive Analysis</span>
+                <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Mood Insights</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-bold">Background Tracking</p>
-                  <p className="text-[8px] text-gray-600 font-bold uppercase tracking-tighter">Stealth camera emotion sync</p>
+                  <p className="text-[8px] text-gray-600 font-bold uppercase tracking-tighter">Live mood detection</p>
                 </div>
                 <div 
                   onClick={() => handleProfileChange('background_tracking_enabled', !profile.background_tracking_enabled, true)}
@@ -264,7 +264,7 @@ const Settings = ({ user, onLogout }) => {
             <div className="bento-card md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <Mail className="w-4 h-4 text-indigo-400" />
-                <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Synthesis Protocols</span>
+                <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Report Settings</span>
               </div>
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-1">
@@ -294,7 +294,7 @@ const Settings = ({ user, onLogout }) => {
 
               <div className="mt-4 pt-4 border-t border-[#1a1a1a] flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <p className="text-xs font-bold">Synthesis Reminders</p>
+                  <p className="text-xs font-bold">Writing Reminders</p>
                   <p className="text-[8px] text-gray-600 font-bold uppercase tracking-tighter">Notify me at 9:30 PM if I haven't journaled</p>
                 </div>
                 <div 
@@ -316,13 +316,14 @@ const Settings = ({ user, onLogout }) => {
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              <input
-                type="text"
-                placeholder="Identity Name"
-                value={newContact.name}
-                onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
-                className="bg-[#050505] border border-[#1a1a1a] rounded-2xl px-5 py-4 text-white focus:border-red-500/50 transition-all text-sm"
-              />
+                <label className="text-[10px] font-black tracking-widest text-gray-600 uppercase ml-1">Contact Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Spouse or Parent"
+                  value={newContact.name}
+                  onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
+                  className="bg-[#050505] border border-[#1a1a1a] rounded-2xl px-5 py-4 text-white focus:border-red-500/50 transition-all text-sm w-full"
+                />
               <input
                 type="tel"
                 placeholder="Phone Number"
@@ -336,7 +337,7 @@ const Settings = ({ user, onLogout }) => {
               onClick={handleAddContact}
               className="w-full py-4 bg-red-600/10 border border-red-600/20 rounded-2xl text-[10px] font-black tracking-widest uppercase text-red-500 hover:bg-red-600/20 transition-all"
             >
-              Add Safety Node
+              Add Safety Contact
             </button>
           </div>
 

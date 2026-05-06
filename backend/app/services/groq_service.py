@@ -23,7 +23,7 @@ class GroqService:
             prompt = f"Generate a short, impressive, and futuristic wellness quote related to {context} for a mind tracking app called MindTrace AI+. Keep it under 20 words."
             chat_completion = self.client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
-                model="llama3-8b-8192",
+                model="llama-3.3-70b-versatile",
                 max_tokens=50,
             )
             return chat_completion.choices[0].message.content.strip().replace('"', '')
@@ -45,7 +45,7 @@ class GroqService:
             )
             chat_completion = self.client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
-                model="llama3-8b-8192",
+                model="llama-3.3-70b-versatile",
                 max_tokens=150,
             )
             suggestions = chat_completion.choices[0].message.content.strip().split('\n')
@@ -86,7 +86,7 @@ class GroqService:
             chat_completion = self.client.chat.completions.create(
                 messages=[{"role": "system", "content": "You are an advanced AI wellness coach for MindTrace AI+."},
                           {"role": "user", "content": prompt}],
-                model="llama3-8b-8192",
+                model="llama-3.3-70b-versatile",
                 max_tokens=400,
                 response_format={"type": "json_object"}
             )
@@ -127,7 +127,7 @@ class GroqService:
             chat_completion = self.client.chat.completions.create(
                 messages=[{"role": "system", "content": "You are an expert psychological analyzer for MindTrace AI+."},
                           {"role": "user", "content": prompt}],
-                model="llama3-8b-8192",
+                model="llama-3.3-70b-versatile",
                 response_format={"type": "json_object"}
             )
             import json
@@ -139,7 +139,7 @@ class GroqService:
     async def _call_llm(self, system_message: str, user_message: str) -> str:
         """Generic helper for LLM chat completions"""
         if not self.client:
-            return "I am processing your resonance, but I need a moment to recalibrate."
+            return "I am processing your thoughts, but I need a moment to connect."
             
         try:
             chat_completion = self.client.chat.completions.create(
@@ -147,7 +147,7 @@ class GroqService:
                     {"role": "system", "content": system_message},
                     {"role": "user", "content": user_message}
                 ],
-                model="llama3-8b-8192",
+                model="llama-3.3-70b-versatile",
                 max_tokens=250,
                 temperature=0.7
             )

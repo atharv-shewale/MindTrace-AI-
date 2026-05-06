@@ -63,7 +63,7 @@ const Onboarding = ({ user, onComplete }) => {
               <div className="flex items-center gap-4 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl">
                 <Shield className="w-6 h-6 text-indigo-500 shrink-0" />
                 <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest leading-relaxed">
-                  Safety Protocol: We need a guardian email to notify in case of critical mood changes.
+                  Safety Setup: We need a guardian email to notify in case of critical mood changes.
                 </p>
               </div>
               
@@ -185,8 +185,8 @@ const Onboarding = ({ user, onComplete }) => {
               <div className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
                   <div className="space-y-1">
-                    <p className="text-sm font-bold text-white">Enable Synthesis Reports</p>
-                    <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Receive deep neural analysis via email</p>
+                    <p className="text-sm font-bold text-white">Enable Wellness Reports</p>
+                    <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Receive deep wellness analysis via email</p>
                   </div>
                   <div 
                     onClick={() => setFormData({...formData, report_enabled: !formData.report_enabled})}
@@ -228,7 +228,7 @@ const Onboarding = ({ user, onComplete }) => {
                   disabled={loading}
                   className="flex-[2] py-5 bg-emerald-600 rounded-2xl text-[10px] font-black tracking-widest uppercase text-white hover:bg-emerald-500 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
-                  {loading ? 'Finalizing Sync...' : 'Complete Initialization'}
+                  {loading ? 'Setting up...' : 'Complete Initialization'}
                 </button>
               </div>
             </div>

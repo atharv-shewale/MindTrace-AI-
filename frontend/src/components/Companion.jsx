@@ -65,7 +65,7 @@ const Companion = ({ currentEmotionData }) => {
           <div>
             <h2 className="text-lg font-black tracking-tight text-white">MindTrace Companion</h2>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black tracking-widest text-gray-500 uppercase">Live Resonance:</span>
+              <span className="text-[10px] font-black tracking-widest text-gray-500 uppercase">Current Mood:</span>
               <span className={`text-[10px] font-black tracking-widest uppercase ${
                 currentEmotionData?.emotion === 'Joy' ? 'text-emerald-400' : 
                 currentEmotionData?.emotion === 'Sadness' ? 'text-indigo-400' : 'text-gray-400'

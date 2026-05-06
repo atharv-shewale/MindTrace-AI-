@@ -227,7 +227,7 @@ const Dashboard = ({ onNavigate, currentMood }) => {
                 </button>
                 <div className="flex items-center gap-2 text-gray-500">
                   <Clock className="w-4 h-4" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Next Pulse: 22m</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest">Next Update: 22m</span>
                 </div>
               </div>
             </div>

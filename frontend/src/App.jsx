@@ -238,7 +238,7 @@ const AppContent = () => {
                 <p className="text-sm font-bold text-white">{user?.full_name || user?.name || user?.email.split('@')[0]}</p>
                 <div className="flex items-center justify-end gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                  <p className="text-[10px] font-black tracking-widest text-emerald-500 uppercase">Neural Active</p>
+                  <p className="text-[10px] font-black tracking-widest text-emerald-500 uppercase">Connected</p>
                 </div>
               </div>
               <button
