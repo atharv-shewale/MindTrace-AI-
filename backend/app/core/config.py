@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, Any
 import os
 
 
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     WINDOW_SIZE: int = 3600  # 1 hour in seconds
     
     # API Settings
-    CORS_ORIGINS: list = ["*"]
+    CORS_ORIGINS: Any = ["*"]
     
     @property
     def cors_origins_list(self) -> list:
