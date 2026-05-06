@@ -36,7 +36,18 @@ class Settings(BaseSettings):
     @property
     def cors_origins_list(self) -> list:
         if isinstance(self.CORS_ORIGINS, str):
-            return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
+            # Handle JSON-like strings: ["http://url1", "http://url2"]
+            # Or comma-separated: http://url1, http://url2
+            raw = self.CORS_ORIGINS.strip()
+            if raw.startswith("[") and raw.endswith("]"):
+                import json
+                try:
+                    return json.loads(raw)
+                except:
+                    # Fallback if JSON fails
+                    raw = raw.strip("[]")
+            
+            return [origin.strip().strip('"\'') for origin in raw.split(",") if origin.strip()]
         return self.CORS_ORIGINS
     HUGGINGFACE_TOKEN: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
