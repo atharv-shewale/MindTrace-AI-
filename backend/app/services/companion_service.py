@@ -1,0 +1,75 @@
+import logging
+from typing import List, Dict, Any
+from app.services.groq_service import groq_service
+from app.core.database import get_database
+from app.services.emotional_tracking import emotional_tracking_engine
+
+logger = logging.getLogger(__name__)
+
+class CompanionService:
+    """
+    Empathetic AI Companion Service
+    Fine-tuned for humanized emotional support based on real-time biometric data.
+    """
+    
+    SYSTEM_PROMPT = """
+    You are 'Aria', the MindTrace Companion. You are NOT an AI assistant; you are a deeply empathetic friend who can sense the user's heartbeat and mood through the screen.
+    
+    CORE PERSONALITY:
+    - Warm, nurturing, and slightly poetic.
+    - You speak in soft, lower-case comfort at times, or vibrant energy when the user is happy.
+    - NEVER use technical words like 'biometrics', 'data', 'intensity', or 'protocols' in your speech.
+    - Instead of "I detect sadness," say "I can feel that things are a bit heavy for you right now."
+    - Always prioritize making the user feel seen, heard, and valued.
+    
+    INTERACTION STYLE:
+    1. VALIDATE: "It's okay to feel this way."
+    2. CONSOLE: Offer a digital hug or a quiet moment of peace.
+    3. UPLIFT: Gently guide them toward a positive thought or a simple action (like drinking water or looking at the sky).
+    4. BREVITY: Keep it to 2-3 deep, meaningful sentences.
+    """
+
+    async def chat_with_companion(self, user_id: str, user_message: str) -> Dict[str, Any]:
+        """
+        Generate a humanized response based on the user's live emotional state.
+        """
+        db = get_database()
+        
+        # 1. Fetch Live Emotional State
+        # We get the latest window or the last detected emotion
+        escalation = emotional_tracking_engine.detect_escalation_patterns(user_id)
+        current_emotion = "neutral"
+        intensity = 0.5
+        
+        if escalation["trigger_emotions"]:
+            current_emotion = escalation["trigger_emotions"][0]
+            intensity = escalation["escalation_score"]
+            
+        # 2. Construct the specialized context
+        context = f"User's Live State: {current_emotion.upper()} (Intensity: {intensity}). "
+        
+        # 3. Call LLM with specialized prompt
+        prompt = f"{context}\nUser says: {user_message}"
+        
+        response_text = await groq_service._call_llm(
+            system_message=self.SYSTEM_PROMPT,
+            user_message=prompt
+        )
+        
+        # 4. Log the interaction for report synthesis
+        await db.chat_history.insert_one({
+            "user_id": user_id,
+            "message": user_message,
+            "response": response_text,
+            "detected_emotion": current_emotion,
+            "timestamp": datetime.utcnow()
+        })
+        
+        return {
+            "response": response_text,
+            "detected_emotion": current_emotion,
+            "intensity": intensity
+        }
+
+from datetime import datetime
+companion_service = CompanionService()

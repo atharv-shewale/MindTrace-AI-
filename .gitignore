@@ -1,0 +1,15 @@
+# Node
+node_modules/
+dist/
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+backend/app/ai/models/
+
+# OS
+.DS_Store
+Thumbs.db

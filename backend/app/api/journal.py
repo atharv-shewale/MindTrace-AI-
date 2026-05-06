@@ -1,0 +1,211 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List, Optional
+from datetime import datetime
+from app.core.security import get_current_user
+from app.core.database import get_database
+from app.ai.emotion_detector import emotion_engine
+from app.services.emotional_tracking import emotional_tracking_engine
+from app.schemas.models import JournalEntryCreate
+from bson import ObjectId
+import logging
+
+logger = logging.getLogger(__name__)
+router = APIRouter()
+
+
+@router.post("/create")
+async def create_journal_entry(
+    entry_data: JournalEntryCreate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Create a new journal entry with emotion detection"""
+    user_id = current_user["sub"]
+    db = get_database()
+    
+    from app.services.huggingface_service import huggingface_service
+    from app.services.groq_service import groq_service
+    
+    # 1. High-Accuracy NLP Analysis (Hugging Face Fine-tuned Model)
+    hf_analysis = await huggingface_service.analyze_emotions(entry_data.content)
+    
+    # 2. Advanced Insights & Suggestions (Groq LLM)
+    # We pass the HF results to Groq to get even better advice
+    ai_analysis = await groq_service.analyze_journal_sentiment(entry_data.content)
+    
+    # Merge findings: HF for pure detection, Groq for context
+    dominant_emotion = hf_analysis["dominant_emotion"].lower()
+    intensity = hf_analysis["intensity"]
+    
+    # Create entry document
+    entry_doc = {
+        "user_id": user_id,
+        "content": entry_data.content,
+        "emotions_detected": [dominant_emotion],
+        "all_scores": hf_analysis["all_emotions"],
+        "dominant_emotion": dominant_emotion,
+        "dominant_intensity": intensity,
+        "mood_intensity": intensity,
+        "sentiment": ai_analysis.get("dominant_emotion", "Neutral"),
+        "positivity": 1.0 - intensity if dominant_emotion in ["sadness", "anger", "fear"] else intensity,
+        "suggestions": ai_analysis.get("suggestions", []),
+        "embeddings": [], # Can be updated if needed
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow()
+    }
+    
+    result = await db.journal_entries.insert_one(entry_doc)
+    
+    # 4. Record emotions and check for critical alerts
+    if dominant_emotion:
+        # Record in tracking engine
+        tracking_result = emotional_tracking_engine.add_emotion_event(
+            user_id=user_id,
+            emotion=dominant_emotion,
+            intensity=intensity,
+            source="journal",
+            context=f"Journal entry: {entry_data.content[:100]}"
+        )
+        
+        # SOS / Guardian Alert Logic
+        CRITICAL_EMOTIONS = ["sadness", "fear", "anger", "depressed", "anxiety"]
+        if dominant_emotion in CRITICAL_EMOTIONS and intensity > 0.8:
+            user = await db.users.find_one({"_id": ObjectId(user_id)})
+            if user and user.get("guardian_email"):
+                from app.services.alert_service import alert_service
+                await alert_service.send_guardian_alert(
+                    user_name=user.get("name", "User"),
+                    guardian_email=user["guardian_email"],
+                    emotion=dominant_emotion,
+                    intensity=intensity,
+                    content_snippet=entry_data.content[:100]
+                )
+
+    # 5. Check if it's late night (>= 9 PM) to trigger End-of-Day report
+    now_hour = datetime.now().hour
+    if now_hour >= 21:
+        from app.services.report_service import report_service
+        # Background task
+        import asyncio
+        asyncio.create_task(report_service.generate_daily_report(user_id))
+
+    return {
+        "entry_id": str(result.inserted_id),
+        "dominant_emotion": dominant_emotion,
+        "sentiment": dominant_emotion,
+        "positivity": 1.0 - intensity if dominant_emotion in ["sadness", "anger", "fear"] else intensity,
+        "suggestions": ai_analysis.get("suggestions", []),
+        "insight": ai_analysis.get("dominant_emotion", "Neutral"),
+        "report_triggered": now_hour >= 21
+    }
+
+
+@router.get("/list")
+async def get_journal_entries(
+    limit: int = 20,
+    skip: int = 0,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get user's journal entries"""
+    user_id = current_user["sub"]
+    db = get_database()
+    
+    entries = await db.journal_entries.find(
+        {"user_id": user_id}
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(None)
+    
+    # Convert ObjectId to string
+    for entry in entries:
+        entry["_id"] = str(entry["_id"])
+    
+    total = await db.journal_entries.count_documents({"user_id": user_id})
+    
+    return {
+        "entries": entries,
+        "total": total,
+        "limit": limit,
+        "skip": skip
+    }
+
+
+@router.get("/{entry_id}")
+async def get_journal_entry(
+    entry_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get a specific journal entry"""
+    user_id = current_user["sub"]
+    db = get_database()
+    
+    try:
+        entry = await db.journal_entries.find_one({
+            "_id": ObjectId(entry_id),
+            "user_id": user_id
+        })
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid entry ID"
+        )
+    
+    if not entry:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Entry not found"
+        )
+    
+    entry["_id"] = str(entry["_id"])
+    return entry
+
+
+@router.delete("/{entry_id}")
+async def delete_journal_entry(
+    entry_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Delete a journal entry"""
+    user_id = current_user["sub"]
+    db = get_database()
+    
+    try:
+        result = await db.journal_entries.delete_one({
+            "_id": ObjectId(entry_id),
+            "user_id": user_id
+        })
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid entry ID"
+        )
+    
+    if result.deleted_count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Entry not found or unauthorized"
+        )
+    
+    return {"deleted": True}
+
+
+@router.get("/search/emotions")
+async def search_entries_by_emotion(
+    emotion: str,
+    limit: int = 10,
+    current_user: dict = Depends(get_current_user)
+):
+    """Search journal entries by emotion"""
+    user_id = current_user["sub"]
+    db = get_database()
+    
+    entries = await db.journal_entries.find({
+        "user_id": user_id,
+        "emotions_detected": emotion.lower()
+    }).sort("created_at", -1).limit(limit).to_list(None)
+    
+    for entry in entries:
+        entry["_id"] = str(entry["_id"])
+    
+    return {
+        "entries": entries,
+        "emotion": emotion,
+        "count": len(entries)
+    }
