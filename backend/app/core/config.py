@@ -31,7 +31,13 @@ class Settings(BaseSettings):
     WINDOW_SIZE: int = 3600  # 1 hour in seconds
     
     # API Settings
-    CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:8081", "http://localhost:5173", "http://127.0.0.1:5173"]
+    CORS_ORIGINS: list = ["*"]
+    
+    @property
+    def cors_origins_list(self) -> list:
+        if isinstance(self.CORS_ORIGINS, str):
+            return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
+        return self.CORS_ORIGINS
     HUGGINGFACE_TOKEN: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
     

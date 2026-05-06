@@ -325,7 +325,7 @@ const Settings = ({ user, onLogout }) => {
               />
               <input
                 type="tel"
-                placeholder="Neural Link (Phone)"
+                placeholder="Phone Number"
                 value={newContact.phone}
                 onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
                 className="bg-[#050505] border border-[#1a1a1a] rounded-2xl px-5 py-4 text-white focus:border-red-500/50 transition-all text-sm"

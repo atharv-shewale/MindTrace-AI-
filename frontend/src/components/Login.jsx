@@ -62,7 +62,7 @@ const Login = ({ onLoginSuccess }) => {
         onLoginSuccess?.(user, access_token);
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Neural link failed. Check your connection.');
+      setError(err.response?.data?.detail || 'Authentication connection failed. Please check your internet connection.');
     } finally {
       setLoading(false);
     }
