@@ -1,10 +1,12 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional, List, Any
-from pydantic import validator, field_validator
+from pydantic import field_validator
 import os
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore", case_sensitive=True)
+
     # App Config
     APP_NAME: str = "MINDTRACE AI+"
     DEBUG: bool = True
@@ -31,13 +33,8 @@ class Settings(BaseSettings):
     CRITICAL_THRESHOLD: float = 0.85
     WINDOW_SIZE: int = 3600  # 1 hour in seconds
     
-    # CORS Origins - Whitelist for Netlify and Local
-    CORS_ORIGINS: Any = [
-        "https://mindtrace-frontend.netlify.app",
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "https://mindtrace-backend-75jm.onrender.com"
-    ]
+    # CORS Origins - Use string default to prevent auto-JSON-parsing by pydantic-settings
+    CORS_ORIGINS: Any = "https://mindtrace-frontend.netlify.app,http://localhost:3000,http://localhost:5173"
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
@@ -48,7 +45,7 @@ class Settings(BaseSettings):
                 try:
                     parsed = json.loads(v)
                     if isinstance(parsed, list):
-                        return [i.strip().rstrip('/') for i in parsed]
+                        return [str(i).strip().rstrip('/') for i in parsed]
                 except Exception:
                     pass
             # Handle comma-separated string
@@ -59,11 +56,6 @@ class Settings(BaseSettings):
 
     HUGGINGFACE_TOKEN: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
-    
-    class Config:
-      env_file = ".env"
-      case_sensitive = True
-      extra = "ignore"
 
 
 settings = Settings()
