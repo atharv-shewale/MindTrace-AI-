@@ -32,9 +32,9 @@ const AppContent = () => {
   const [negativeStreak, setNegativeStreak] = React.useState(0);
   const NEGATIVE_STREAK_THRESHOLD = 8;
 
-  // Local Neural Sync Listener (Zero Latency)
+  // Local Mood Sync Listener (Zero Latency)
   React.useEffect(() => {
-    const handleNeuralSync = (e) => {
+    const handleMoodUpdate = (e) => {
       const { emotion, intensity, timestamp } = e.detail;
       const formattedEmotion = emotion.charAt(0).toUpperCase() + emotion.slice(1);
       
@@ -60,8 +60,8 @@ const AppContent = () => {
       }
     };
 
-    window.addEventListener('neural-sync', handleNeuralSync);
-    return () => window.removeEventListener('neural-sync', handleNeuralSync);
+    window.addEventListener('mood-update', handleMoodUpdate);
+    return () => window.removeEventListener('mood-update', handleMoodUpdate);
   }, []);
 
   // Browser Notification Permission

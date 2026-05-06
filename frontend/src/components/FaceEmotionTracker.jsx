@@ -4,70 +4,123 @@ import { emotionAPI } from '../utils/api';
 
 const FaceEmotionTracker = ({ onEmotionDetected }) => {
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
+  const faceMeshRef = useRef(null);
   const [isActive, setIsActive] = useState(false);
   const [emotion, setEmotion] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const processingRef = useRef(false);
 
   useEffect(() => {
-    let interval;
     if (isActive) {
-      startCamera();
-      interval = setInterval(captureAndAnalyze, 5000); // Analyze every 5 seconds
+      initMediaPipe();
     } else {
       stopCamera();
     }
     return () => {
-      clearInterval(interval);
       stopCamera();
     };
   }, [isActive]);
 
-  const startCamera = async () => {
+  const initMediaPipe = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
+      setLoading(true);
+      if (!window.FaceMesh || !window.Camera) {
+        setTimeout(initMediaPipe, 1000);
+        return;
+      }
+
+      const faceMesh = new window.FaceMesh({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+      });
+
+      faceMesh.setOptions({
+        maxNumFaces: 1,
+        refineLandmarks: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+
+      faceMesh.onResults(onResults);
+      faceMeshRef.current = faceMesh;
+
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { width: 640, height: 480 } 
+      });
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        
+        const camera = new window.Camera(videoRef.current, {
+          onFrame: async () => {
+            if (videoRef.current && isActive) {
+              await faceMesh.send({image: videoRef.current});
+            }
+          },
+          width: 640,
+          height: 480
+        });
+        camera.start();
       }
+      setLoading(false);
       setError(null);
     } catch (err) {
       console.error("Camera error:", err);
-      setError("Camera access denied. Please enable it for live tracking.");
+      setError("Camera access denied or unavailable.");
       setIsActive(false);
+      setLoading(false);
     }
   };
 
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
-      const tracks = videoRef.current.srcObject.getTracks();
-      tracks.forEach(track => track.stop());
+      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       videoRef.current.srcObject = null;
     }
   };
 
-  const captureAndAnalyze = async () => {
-    if (!videoRef.current || !canvasRef.current || loading) return;
-
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    const base64Image = canvas.toDataURL('image/jpeg', 0.6);
-    
-    setLoading(true);
-    try {
-      const res = await emotionAPI.detectFace(base64Image);
-      setEmotion(res.data);
-      onEmotionDetected?.(res.data);
-    } catch (err) {
-      console.error("Analysis error:", err);
-    } finally {
-      setLoading(false);
+  const onResults = async (results) => {
+    if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0 || processingRef.current) {
+      return;
     }
+
+    const landmarks = results.multiFaceLandmarks[0];
+    
+    // Heuristic analysis (Client Side)
+    const faceLeft = landmarks[234], faceRight = landmarks[454];
+    const faceWidth = Math.sqrt(Math.pow(faceRight.x - faceLeft.x, 2) + Math.pow(faceRight.y - faceLeft.y, 2)) || 1;
+    
+    const mouthLeft = landmarks[61], mouthRight = landmarks[291];
+    const smileRatio = Math.sqrt(Math.pow(mouthRight.x - mouthLeft.x, 2) + Math.pow(mouthRight.y - mouthLeft.y, 2)) / faceWidth;
+    
+    const topLip = landmarks[13], bottomLip = landmarks[14];
+    const mouthRatio = Math.sqrt(Math.pow(bottomLip.x - topLip.x, 2) + Math.pow(bottomLip.y - topLip.y, 2)) / faceWidth;
+
+    const mouthCenter = landmarks[0];
+    const cornersY = (mouthLeft.y + mouthRight.y) / 2;
+    const mouthDrop = (cornersY - mouthCenter.y) / faceWidth;
+
+    let detected = 'neutral';
+    let intensity = 0.2;
+
+    if (smileRatio > 0.38) { detected = 'joy'; intensity = 0.8; }
+    else if (mouthRatio > 0.08) { detected = 'surprise'; intensity = 0.9; }
+    else if (mouthDrop > 0.002) { detected = 'sadness'; intensity = 0.6; }
+
+    const emotionData = {
+      dominant_emotion: detected.charAt(0).toUpperCase() + detected.slice(1),
+      dominant_intensity: intensity,
+      timestamp: new Date()
+    };
+
+    setEmotion(emotionData);
+    onEmotionDetected?.(emotionData);
+    
+    // Dispatch for global dashboard
+    window.dispatchEvent(new CustomEvent('mood-update', { detail: { emotion: detected, intensity } }));
+
+    processingRef.current = true;
+    setTimeout(() => { processingRef.current = false; }, 1000);
   };
 
   return (
@@ -79,7 +132,7 @@ const FaceEmotionTracker = ({ onEmotionDetected }) => {
           </div>
           <div>
             <h3 className="text-sm font-bold text-white uppercase tracking-widest">Live Tracking</h3>
-            <p className="text-[10px] font-black text-slate-500 tracking-tighter uppercase">Real-time Expression Analysis</p>
+            <p className="text-[10px] font-black text-slate-500 tracking-tighter uppercase">Client-Side Private Analysis</p>
           </div>
         </div>
         <button
@@ -98,33 +151,17 @@ const FaceEmotionTracker = ({ onEmotionDetected }) => {
         {!isActive ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
             <CameraOff className="w-10 h-10 text-slate-800 mb-3" />
-            <p className="text-xs text-slate-600 font-bold max-w-[180px]">Connect your tracking link for live emotional feedback</p>
+            <p className="text-xs text-slate-600 font-bold max-w-[180px]">Enable tracking for live private feedback</p>
           </div>
         ) : (
           <>
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              playsInline
-              className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
-            />
-            <canvas ref={canvasRef} className="hidden" />
-            
-            {/* HUD Overlay */}
+            <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
             <div className="absolute inset-0 border-[20px] border-transparent pointer-events-none">
               <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-indigo-500/40"></div>
               <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-indigo-500/40"></div>
               <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-indigo-500/40"></div>
               <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-indigo-500/40"></div>
             </div>
-
-            {loading && (
-              <div className="absolute top-4 right-4 flex items-center gap-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg border border-white/10">
-                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></div>
-                <span className="text-[8px] font-black tracking-widest text-white uppercase">Syncing...</span>
-              </div>
-            )}
           </>
         )}
       </div>
@@ -134,7 +171,7 @@ const FaceEmotionTracker = ({ onEmotionDetected }) => {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Brain className="w-4 h-4 text-indigo-400" />
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Detected State</span>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Client State</span>
             </div>
             <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{Math.round(emotion.dominant_intensity * 100)}% Match</span>
           </div>
@@ -147,20 +184,7 @@ const FaceEmotionTracker = ({ onEmotionDetected }) => {
         </div>
       )}
 
-      {error && (
-        <p className="mt-3 text-[10px] text-red-400 font-bold text-center italic">{error}</p>
-      )}
-      
-      <div className="mt-4 flex items-center gap-4 text-[8px] font-black tracking-[0.2em] text-slate-600 uppercase">
-        <div className="flex items-center gap-1.5">
-          <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-indigo-500' : 'bg-slate-800'}`}></div>
-          End-to-End Encrypted
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-indigo-500' : 'bg-slate-800'}`}></div>
-          Local Frame Capture
-        </div>
-      </div>
+      {error && <p className="mt-3 text-[10px] text-red-400 font-bold text-center italic">{error}</p>}
     </div>
   );
 };

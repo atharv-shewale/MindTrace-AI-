@@ -19,9 +19,12 @@ const BackgroundEmotionTracker = ({ enabled }) => {
 
   const initMediaPipe = async () => {
     try {
-      console.log("Initializing Neural Geometric Tracking (MediaPipe)...");
+      console.log("Initializing Mood Tracking (MediaPipe)...");
       
-      // Ensure scripts are loaded
+      if (!window.isSecureContext) {
+        console.error("Camera tracking requires a secure HTTPS connection.");
+        return;
+      }
       if (!window.FaceMesh || !window.Camera) {
         console.log("MediaPipe scripts not ready, retrying in 1s...");
         setTimeout(initMediaPipe, 1000);
@@ -121,7 +124,7 @@ const BackgroundEmotionTracker = ({ enabled }) => {
     let intensity = 0.2;
 
     // LOGGING FOR CALIBRATION
-    console.log(`[Neural Sync] Ratios -> Smile: ${smileRatio.toFixed(3)}, Mouth: ${mouthRatio.toFixed(3)}, Brows: ${eyebrowRatio.toFixed(3)}, Drop: ${mouthDrop.toFixed(3)}`);
+    console.log(`[Tracking] Ratios -> Smile: ${smileRatio.toFixed(3)}, Mouth: ${mouthRatio.toFixed(3)}, Brows: ${eyebrowRatio.toFixed(3)}, Drop: ${mouthDrop.toFixed(3)}`);
 
     // Extremely loose thresholds to ensure movement
     if (smileRatio > 0.38) {
@@ -144,7 +147,7 @@ const BackgroundEmotionTracker = ({ enabled }) => {
     processingRef.current = true;
     try {
       // 1. Dispatch LOCAL event for zero-latency UI update
-      const syncEvent = new CustomEvent('neural-sync', {
+      const syncEvent = new CustomEvent('mood-update', {
         detail: { emotion: dominant, intensity: intensity, timestamp: new Date() }
       });
       window.dispatchEvent(syncEvent);
@@ -153,7 +156,7 @@ const BackgroundEmotionTracker = ({ enabled }) => {
       await emotionAPI.record({
         emotion: dominant,
         intensity: intensity,
-        source: 'neural_geometric',
+        source: 'geometric_tracker',
         note: `S:${smileRatio.toFixed(3)} D:${mouthDrop.toFixed(3)} B:${eyebrowRatio.toFixed(3)}`,
         timestamp: new Date().toISOString()
       });
