@@ -146,7 +146,7 @@ const Settings = ({ user, onLogout }) => {
             activeTab === 'emergency' ? 'bg-white/5 text-white' : 'text-gray-500 hover:text-gray-300'
           }`}
         >
-          Neural Guard
+          Privacy Guard
         </button>
       </div>
 
@@ -155,7 +155,7 @@ const Settings = ({ user, onLogout }) => {
           <div className="obsidian-card">
             <h3 className="text-[10px] font-black tracking-[0.2em] text-indigo-500 uppercase mb-8 flex items-center gap-2">
               <User className="w-3.5 h-3.5" />
-              Neural Profile
+              Profile Settings
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -218,7 +218,7 @@ const Settings = ({ user, onLogout }) => {
                 <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Alerts</span>
               </div>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold">Neural Reminders</p>
+                <p className="text-sm font-bold">Smart Notifications</p>
                 <div 
                   onClick={() => handleProfileChange('notification_enabled', !profile.notification_enabled, true)}
                   className={`w-12 h-6 rounded-full transition-all cursor-pointer relative ${profile.notification_enabled ? 'bg-indigo-600' : 'bg-[#222]'}`}
@@ -269,7 +269,7 @@ const Settings = ({ user, onLogout }) => {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-1">
                   <p className="text-sm font-bold">End-of-Day Reports</p>
-                  <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Receive deep neural analysis via email at 10 PM</p>
+                  <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Receive deep wellness analysis via email at 10 PM</p>
                 </div>
                 
                 <div className="flex items-center gap-4">

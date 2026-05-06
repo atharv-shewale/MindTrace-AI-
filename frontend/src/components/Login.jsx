@@ -30,12 +30,12 @@ const Login = ({ onLoginSuccess }) => {
     setError('');
 
     if (!formData.email || !formData.password) {
-      setError('Neural credentials required.');
+      setError('Account credentials required.');
       return;
     }
 
     if (mode === 'signup' && formData.password !== formData.confirmPassword) {
-      setError('Password sync failed. Confirmation must match.');
+      setError('Password match failed. Confirmation must match.');
       return;
     }
 
@@ -85,7 +85,7 @@ const Login = ({ onLoginSuccess }) => {
           <h1 className="text-4xl font-black tracking-tighter text-white mb-2">
             MINDTRACE<span className="text-indigo-500">AI+</span>
           </h1>
-          <p className="text-gray-500 font-medium tracking-wide">Secure Neural Synchronization</p>
+          <p className="text-gray-500 font-medium tracking-wide">Secure Personal Insights</p>
         </div>
 
         {/* Main Card */}
@@ -98,7 +98,7 @@ const Login = ({ onLoginSuccess }) => {
                 mode === 'login' ? 'text-white bg-white/5' : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              Initialize
+              Login
             </button>
             <button
               onClick={() => setMode('signup')}
@@ -106,14 +106,14 @@ const Login = ({ onLoginSuccess }) => {
                 mode === 'signup' ? 'text-white bg-white/5' : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              Register
+              Sign Up
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
             {mode === 'signup' && (
               <div className="space-y-2">
-                <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Full Identity</label>
+                <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Full Name</label>
                 <div className="relative">
                   <input
                     type="text"
@@ -128,7 +128,7 @@ const Login = ({ onLoginSuccess }) => {
             )}
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Neural Address</label>
+              <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Email Address</label>
               <input
                 type="email"
                 name="email"
@@ -140,7 +140,7 @@ const Login = ({ onLoginSuccess }) => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Access Key</label>
+              <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -162,7 +162,7 @@ const Login = ({ onLoginSuccess }) => {
 
             {mode === 'signup' && (
               <div className="space-y-2">
-                <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Confirm Key</label>
+                <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Confirm Password</label>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -191,7 +191,7 @@ const Login = ({ onLoginSuccess }) => {
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
-                    <span>{mode === 'login' ? 'Sync Profile' : 'Create Node'}</span>
+                    <span>{mode === 'login' ? 'Login' : 'Create Account'}</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
@@ -203,7 +203,7 @@ const Login = ({ onLoginSuccess }) => {
           <div className="px-8 pb-8 flex items-center justify-center gap-2">
             <Sparkles className="w-3 h-3 text-emerald-500" />
             <p className="text-[9px] font-black tracking-[0.2em] text-gray-600 uppercase">
-              End-to-End Neural Encryption Active
+              End-to-End Data Encryption Active
             </p>
           </div>
         </div>

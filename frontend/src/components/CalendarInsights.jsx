@@ -84,7 +84,7 @@ const CalendarInsights = ({ history = [] }) => {
     <div className="space-y-6">
       <div className="flex items-center justify-between px-2">
         <div>
-          <h2 className="text-xl font-bold tracking-tight">Neural History</h2>
+          <h2 className="text-xl font-bold tracking-tight">Wellness History</h2>
           <p className="text-[10px] font-black tracking-widest text-gray-500 uppercase mt-1">Cross-Spectral Emotional Logs</p>
         </div>
         <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-1">

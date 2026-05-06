@@ -78,7 +78,7 @@ const FaceEmotionTracker = ({ onEmotionDetected }) => {
             <Camera className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white uppercase tracking-widest">Neural Vision</h3>
+            <h3 className="text-sm font-bold text-white uppercase tracking-widest">Live Tracking</h3>
             <p className="text-[10px] font-black text-slate-500 tracking-tighter uppercase">Real-time Expression Analysis</p>
           </div>
         </div>
@@ -98,7 +98,7 @@ const FaceEmotionTracker = ({ onEmotionDetected }) => {
         {!isActive ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
             <CameraOff className="w-10 h-10 text-slate-800 mb-3" />
-            <p className="text-xs text-slate-600 font-bold max-w-[180px]">Connect your neural vision link for live emotional feedback</p>
+            <p className="text-xs text-slate-600 font-bold max-w-[180px]">Connect your tracking link for live emotional feedback</p>
           </div>
         ) : (
           <>

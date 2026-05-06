@@ -140,7 +140,7 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
         <div className={`flex items-center gap-2 px-4 py-2 border rounded-xl transition-all duration-500 ${loading ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
           <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${loading ? 'bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]' : 'bg-emerald-500'}`}></div>
           <span className={`text-[10px] font-black tracking-widest uppercase ${loading ? 'text-indigo-500' : 'text-emerald-500'}`}>
-            {loading ? 'Neural Analysis...' : 'Live Sensing'}
+            {loading ? 'Analyzing Mood...' : 'Save Entry'}
           </span>
         </div>
       </div>
@@ -157,7 +157,7 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
         {lastSynced && (
           <div className="absolute top-10 right-10 flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl animate-in fade-in zoom-in duration-300">
             <Sparkles className="w-4 h-4 text-emerald-500" />
-            <span className="text-emerald-500 text-[10px] font-black tracking-widest uppercase">Neural Record Secured</span>
+            <span className="text-emerald-500 text-[10px] font-black tracking-widest uppercase">Entry Saved Successfully</span>
           </div>
         )}
         
@@ -264,7 +264,7 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
               ))}
               {!analysis.suggestions?.length && (
                 <p className="text-gray-500 text-sm font-medium leading-relaxed italic">
-                  {analysis.insight || "Processing neural patterns for optimization..."}
+                  {analysis.insight || "Processing insights for your wellness..."}
                 </p>
               )}
             </div>

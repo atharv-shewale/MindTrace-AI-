@@ -7,7 +7,7 @@ const DailyPractice = ({ onBack }) => {
   const practices = [
     { 
       id: 'gratitude', 
-      title: 'Neural Gratitude', 
+      title: 'Daily Gratitude', 
       desc: 'List 3 specific things you are grateful for today.', 
       icon: <Heart className="w-5 h-5 text-pink-500" />,
       points: 10
@@ -21,7 +21,7 @@ const DailyPractice = ({ onBack }) => {
     },
     { 
       id: 'reflection', 
-      title: 'Neural Echo', 
+      title: 'Daily Echo', 
       desc: 'Identify one choice you made today that aligns with your core values.', 
       icon: <Star className="w-5 h-5 text-amber-500" />,
       points: 20
@@ -93,8 +93,8 @@ const DailyPractice = ({ onBack }) => {
         {completed.length === practices.length && (
           <div className="p-8 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl text-center animate-in zoom-in duration-500">
             <Sparkles className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-            <h3 className="text-2xl font-black text-emerald-500 mb-2">Neural Alignment Complete</h3>
-            <p className="text-emerald-500/70 text-sm font-medium">Your stability index has been optimized for the next 24 neural cycles.</p>
+            <h3 className="text-2xl font-black text-emerald-500 mb-2">Practice Complete</h3>
+            <p className="text-emerald-500/70 text-sm font-medium">Your mood stability has been optimized for the day.</p>
           </div>
         )}
       </div>

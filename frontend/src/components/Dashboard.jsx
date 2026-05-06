@@ -121,7 +121,7 @@ const Dashboard = ({ onNavigate, currentMood }) => {
             <Brain className="w-6 h-6 text-indigo-500 animate-pulse" />
           </div>
         </div>
-        <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-500">Initializing Neural Interface...</p>
+        <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-500">Initializing System...</p>
       </div>
     );
   }
@@ -175,7 +175,7 @@ const Dashboard = ({ onNavigate, currentMood }) => {
             </div>
             
             <div className="space-y-1">
-              <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Neural State</p>
+              <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Mood State</p>
               <h3 className="text-4xl font-black text-white tracking-tighter transition-all duration-500">{currentMood?.emotion || 'Calibrating'}</h3>
             </div>
           </div>
@@ -210,8 +210,8 @@ const Dashboard = ({ onNavigate, currentMood }) => {
                 </div>
                 <h3 className="text-3xl font-bold mb-4 leading-tight text-white/90">
                   {stabilityIndex >= 70 
-                    ? "Your neural patterns show exceptional clarity today." 
-                    : "Slight emotional turbulence detected. Consider a recalibration protocol."}
+                    ? "Your emotional patterns show exceptional clarity today." 
+                    : "Slight emotional turbulence detected. Consider a mindfulness exercise."}
                 </h3>
                 <p className="text-gray-500 text-lg leading-relaxed font-medium">
                   {analytics?.insight || "We've analyzed your recent biometric data. You're showing high adaptability in your emotional core."}

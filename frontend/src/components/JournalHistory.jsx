@@ -56,7 +56,7 @@ const JournalHistory = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h2 className="text-gray-400 text-sm font-bold tracking-widest uppercase mb-1">Archives</h2>
-          <h1 className="text-4xl font-black tracking-tight">Neural Records</h1>
+          <h1 className="text-4xl font-black tracking-tight">Journal History</h1>
         </div>
         
         <div className="relative group">
@@ -127,7 +127,7 @@ const JournalHistory = () => {
               <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Brain className="w-8 h-8 text-gray-700" />
               </div>
-              <p className="text-gray-500 font-medium">No neural records found matching your search.</p>
+              <p className="text-gray-500 font-medium">No records found matching your search.</p>
             </div>
           )}
         </div>
@@ -148,7 +148,7 @@ const JournalHistory = () => {
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black tracking-tight">Neural Record Details</h2>
+                  <h2 className="text-xl font-black tracking-tight">Journal Details</h2>
                   <p className="text-[10px] font-black tracking-[0.2em] text-indigo-500 uppercase">
                     Captured: {new Date(selectedEntry.created_at).toLocaleString()}
                   </p>

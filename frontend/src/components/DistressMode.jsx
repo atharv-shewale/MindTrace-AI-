@@ -66,7 +66,7 @@ const DistressMode = ({ isActive, emotion, intensity, onClose, sosContacts = [] 
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-black tracking-tighter text-white uppercase italic">Neural Override Active</h1>
+                <h1 className="text-2xl font-black tracking-tighter text-white uppercase italic">Safety Mode Active</h1>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
                   <p className="text-[10px] font-black tracking-[0.2em] text-red-400 uppercase">Emergency Protocol Engaged</p>
@@ -97,7 +97,7 @@ const DistressMode = ({ isActive, emotion, intensity, onClose, sosContacts = [] 
               </div>
               
               <div className="text-center">
-                <h3 className="text-sm font-black tracking-widest uppercase text-gray-500 mb-2">Neural Pacing</h3>
+                <h3 className="text-sm font-black tracking-widest uppercase text-gray-500 mb-2">Breath Pacing</h3>
                 <p className="text-xs text-gray-400 font-medium max-w-[200px]">Focus solely on the expansion and contraction of the circle.</p>
               </div>
             </div>
@@ -123,7 +123,7 @@ const DistressMode = ({ isActive, emotion, intensity, onClose, sosContacts = [] 
                 <div className="space-y-4 pt-4 border-t border-white/5">
                   <h3 className="text-[10px] font-black tracking-[0.2em] text-gray-500 uppercase flex items-center gap-2">
                     <Phone className="w-3 h-3 text-red-500" />
-                    Neural Safety Line
+                    Safety Contact
                   </h3>
                   <div className="grid grid-cols-1 gap-2">
                     {sosContacts.map((contact, i) => (

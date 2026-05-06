@@ -43,7 +43,7 @@ const Companion = ({ currentEmotionData }) => {
       console.error('Companion Chat Error:', error);
       setMessages(prev => [...prev, { 
         role: 'bot', 
-        content: "I'm sorry, I'm having a little trouble connecting with your neural stream. I'm still here for you, though.",
+        content: "I'm sorry, I'm having a little trouble with our connection. I'm still here for you, though.",
         timestamp: new Date()
       }]);
     } finally {
@@ -77,7 +77,7 @@ const Companion = ({ currentEmotionData }) => {
         </div>
         <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
           <Brain className="w-4 h-4 text-indigo-400" />
-          <span className="text-[10px] font-black tracking-widest text-gray-400 uppercase">Neural Empathy: Active</span>
+          <span className="text-[10px] font-black tracking-widest text-gray-400 uppercase">Empathetic Support: Active</span>
         </div>
       </div>
 
