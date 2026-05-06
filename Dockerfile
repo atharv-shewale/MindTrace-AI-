@@ -21,4 +21,5 @@ WORKDIR /app/backend
 EXPOSE 8000
 
 # Start the application using the main.py in the backend folder
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Using shell form to allow environment variable expansion ($PORT)
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
