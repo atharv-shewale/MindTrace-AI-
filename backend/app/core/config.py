@@ -35,20 +35,25 @@ class Settings(BaseSettings):
     
     @property
     def cors_origins_list(self) -> list:
+        origins = []
         if isinstance(self.CORS_ORIGINS, str):
-            # Handle JSON-like strings: ["http://url1", "http://url2"]
-            # Or comma-separated: http://url1, http://url2
             raw = self.CORS_ORIGINS.strip()
             if raw.startswith("[") and raw.endswith("]"):
                 import json
                 try:
-                    return json.loads(raw)
+                    origins = json.loads(raw)
                 except:
-                    # Fallback if JSON fails
                     raw = raw.strip("[]")
-            
-            return [origin.strip().strip('"\'') for origin in raw.split(",") if origin.strip()]
-        return self.CORS_ORIGINS
+                    origins = [o.strip() for o in raw.split(",") if o.strip()]
+            else:
+                origins = [o.strip() for o in raw.split(",") if o.strip()]
+        else:
+            origins = self.CORS_ORIGINS
+
+        # Bulletproof: Strip quotes and TRAILING SLASHES (browsers don't send trailing slashes in origins)
+        clean_origins = [o.strip('"\' ').rstrip('/') for o in origins if o]
+        print(f"--- [DEBUG] ALLOWED CORS ORIGINS: {clean_origins} ---")
+        return clean_origins
     HUGGINGFACE_TOKEN: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
     
