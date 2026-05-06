@@ -35,6 +35,8 @@ class UserProfileUpdate(BaseModel):
     guardian_email: Optional[str] = None
     interests: Optional[List[str]] = None
     background_tracking_enabled: Optional[bool] = None
+    report_enabled: Optional[bool] = None
+    report_frequency: Optional[str] = None
 
 
 def _serialize_profile(user: dict) -> dict:
@@ -59,6 +61,8 @@ def _serialize_profile(user: dict) -> dict:
         "guardian_email": user.get("guardian_email"),
         "interests": user.get("interests", []),
         "background_tracking_enabled": user.get("background_tracking_enabled", False),
+        "report_enabled": user.get("report_enabled", True),
+        "report_frequency": user.get("report_frequency", "daily"),
     }
 
 
@@ -124,6 +128,10 @@ async def update_user_profile(
         updates["interests"] = profile_data.interests
     if profile_data.background_tracking_enabled is not None:
         updates["background_tracking_enabled"] = profile_data.background_tracking_enabled
+    if profile_data.report_enabled is not None:
+        updates["report_enabled"] = profile_data.report_enabled
+    if profile_data.report_frequency is not None:
+        updates["report_frequency"] = profile_data.report_frequency
     
     result = await db.users.update_one(
         {"_id": ObjectId(user_id)},
