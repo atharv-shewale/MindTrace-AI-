@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class VideoService:
     def __init__(self):
-        self.csv_path = "mindtrace_emotion_video_dataset.csv"
+        self.csv_path = "mindtrace_emotional_support_dataset.csv"
         self._data = None
         self._load_data()
 
@@ -15,51 +15,43 @@ class VideoService:
         try:
             if os.path.exists(self.csv_path):
                 self._data = pd.read_csv(self.csv_path)
-                # Clean up categories (strip whitespace) for robust matching
-                self._data['Category'] = self._data['Category'].str.strip()
-                logger.info(f"Loaded {len(self._data)} video suggestions from {self.csv_path}")
+                # Clean up emotion strings
+                self._data['emotion'] = self._data['emotion'].str.strip().str.lower()
+                logger.info(f"Loaded {len(self._data)} support suggestions from {self.csv_path}")
             else:
-                logger.warning(f"Video dataset not found at {self.csv_path}")
+                logger.warning(f"Support dataset not found at {self.csv_path}")
         except Exception as e:
-            logger.error(f"Error loading video dataset: {e}")
+            logger.error(f"Error loading support dataset: {e}")
 
     def get_video_for_emotion(self, emotion: str) -> str:
         """
-        Map a detected emotion to a category and return a random YouTube link.
-        Strictly uses the CSV dataset provided.
+        Strictly uses the 'mindtrace_emotional_support_dataset.csv'
         """
         if self._data is None or self._data.empty:
-            return "https://www.youtube.com/watch?v=mgmVOuLgFB0" # Safe internal fallback (Sad Recovery)
+            return "https://www.youtube.com/watch?v=mgmVOuLgFB0"
 
-        # Mapping logic based on CSV categories: Laugh, Sad Recovery, Motivation, Calm Down, Anxiety, Focus Music
-        mapping = {
-            "joy": "Laugh",
-            "happiness": "Laugh",
-            "sadness": "Sad Recovery",
-            "sad": "Sad Recovery",
-            "anger": "Calm Down",
-            "fear": "Anxiety",
-            "anxiety": "Anxiety",
-            "neutral": "Focus Music",
-            "surprise": "Motivation",
-            "disgust": "Calm Down",
-            "frustration": "Calm Down",
-            "depressed": "Sad Recovery",
-            "lonely": "Sad Recovery"
-        }
-
-        category = mapping.get(emotion.lower(), "Motivation")
+        search_emotion = emotion.lower().strip()
         
-        # Filter data from the CSV strictly
-        filtered = self._data[self._data['Category'] == category]
+        # Direct filter on the 'emotion' column
+        filtered = self._data[self._data['emotion'] == search_emotion]
         
         if filtered.empty:
-            # If the mapped category isn't in CSV, fallback to a general 'Motivation' link from the CSV
-            fallback = self._data[self._data['Category'] == "Motivation"]
-            if not fallback.empty:
-                return random.choice(fallback['YouTube_Link'].tolist())
-            return random.choice(self._data['YouTube_Link'].tolist())
+            # Fallback mapping for emotions not explicitly in CSV
+            mapping = {
+                "joy": "burnout", # Just to get something positive/calm
+                "happiness": "burnout",
+                "neutral": "stress",
+                "fear": "anxiety",
+                "frustration": "anger",
+                "depressed": "sadness",
+                "lonely": "sadness"
+            }
+            mapped_emotion = mapping.get(search_emotion, "stress")
+            filtered = self._data[self._data['emotion'] == mapped_emotion]
 
-        return random.choice(filtered['YouTube_Link'].tolist())
+        if not filtered.empty:
+            return random.choice(filtered['youtube_link'].tolist())
+        
+        return random.choice(self._data['youtube_link'].tolist()) if not self._data.empty else "https://www.youtube.com/watch?v=mgmVOuLgFB0"
 
 video_service = VideoService()
