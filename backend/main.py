@@ -38,27 +38,25 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Custom CORS Middleware for Production Stability
-@app.middleware("http")
-async def custom_cors_middleware(request, call_next):
-    if request.method == "OPTIONS":
-        origin = request.headers.get("Origin")
-        response = Response(status_code=200)
-        # Always echo the origin for credentials support in production
-        response.headers["Access-Control-Allow-Origin"] = origin if origin else "*"
-        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-        response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Accept, X-Requested-With"
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-        return response
+# CORS middleware
+origins = [
+    "https://mindtrace-frontend.netlify.app",
+    "https://mindtrace-ai.netlify.app",
+    "http://localhost:3000",
+    "http://localhost:5173",
+]
+# Add any origins from settings
+for origin in settings.CORS_ORIGINS:
+    if str(origin) not in origins:
+        origins.append(str(origin))
 
-    response = await call_next(request)
-    origin = request.headers.get("Origin")
-    if origin:
-        response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-        response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Accept, X-Requested-With"
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-    return response
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.middleware("http")
 async def log_requests(request, call_next):
