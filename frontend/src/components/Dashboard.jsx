@@ -12,9 +12,10 @@ import {
   Star,
   Bell,
   Clock,
+  LayoutGrid,
+  Compass,
   Music,
-  Coffee,
-  Wind
+  Coffee
 } from 'lucide-react';
 import { analyticsAPI } from '../utils/api';
 import { 
@@ -324,10 +325,7 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
                 <p className="text-sm font-bold text-foreground mb-1">Joy Boost</p>
                 <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Protocol Delta</p>
               </div>
-              <div 
-                onClick={() => onNavigate('breathing')}
-                className="p-5 bg-glass border border-borderglass rounded-3xl hover:bg-glass brightness-110 transition-all cursor-pointer group"
-              >
+              <div className="p-5 bg-glass border border-borderglass rounded-3xl hover:bg-glass brightness-110 transition-all cursor-pointer group">
                 <Zap className="w-6 h-6 text-amber-400 mb-3 group-hover:scale-110 transition-transform" />
                 <p className="text-sm font-bold text-foreground mb-1">Neural Reset</p>
                 <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Immediate Effect</p>
@@ -339,7 +337,7 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
             onClick={() => onNavigate('breathing')}
             className="w-full mt-6 py-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500/20 transition-all"
           >
-            Initiate Box Breathing Protocol
+            Trigger Global Recalibration
           </button>
         </div>
 
@@ -349,18 +347,7 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
             <Compass className="w-5 h-5 text-purple-400" />
             <span className="text-gray-400 text-xs font-black tracking-widest uppercase">Personalized Activities</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div 
-              onClick={() => onNavigate('breathing')}
-              className="p-6 bg-surface border border-borderglass rounded-3xl hover:border-indigo-500/30 transition-all cursor-pointer group"
-            >
-              <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-4">
-                <Wind className="w-5 h-5 text-indigo-500" />
-              </div>
-              <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-indigo-400">Box Breathing</h4>
-              <p className="text-sm text-muted">A 4-4-4-4 technique to stabilize your heart rate and neural core.</p>
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {(!user?.interests || user?.interests?.includes('nature')) && (
               <div className="p-6 bg-surface border border-borderglass rounded-3xl hover:border-emerald-500/30 transition-all cursor-pointer group">
                 <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
@@ -388,6 +375,16 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
                 </div>
                 <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-purple-400">Cafe Reading</h4>
                 <p className="text-sm text-muted">Spend 30 minutes reading at a local cafe to decompress.</p>
+              </div>
+            )}
+            
+            {user?.interests?.length > 0 && !user?.interests?.includes('nature') && !user?.interests?.includes('music') && !user?.interests?.includes('reading') && (
+              <div className="p-6 bg-surface border border-borderglass rounded-3xl hover:border-amber-500/30 transition-all cursor-pointer group">
+                <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center mb-4">
+                  <Sparkles className="w-5 h-5 text-amber-500" />
+                </div>
+                <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-amber-400">Creative Flow</h4>
+                <p className="text-sm text-muted">Engage in your interest "{user.interests[0]}" to channel your current energy positively.</p>
               </div>
             )}
           </div>
