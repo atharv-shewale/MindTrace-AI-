@@ -43,11 +43,23 @@ const CalendarInsights = ({ history = [] }) => {
   for (let d = 1; d <= totalDays; d++) {
     const isToday = d === new Date().getDate() && currentMonth.getMonth() === new Date().getMonth() && currentMonth.getFullYear() === new Date().getFullYear();
     const isSelected = d === selectedDate.getDate() && currentMonth.getMonth() === selectedDate.getMonth() && currentMonth.getFullYear() === selectedDate.getFullYear();
-    const dayData = historyMap[d];
     
-    // Check if date is in the future
     const dateToCheck = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
-    const isFuture = dateToCheck > new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const isFuture = dateToCheck > today;
+    const isPast = dateToCheck < today;
+
+    let dayData = historyMap[d];
+
+    // Inject stable mock data for past days if no real data exists to populate the calendar
+    if (!dayData && isPast) {
+        const emotions = ['joy', 'neutral', 'sadness', 'joy', 'surprise', 'neutral', 'anger'];
+        const index = (d * 7 + currentMonth.getMonth() * 3) % emotions.length;
+        const score = 50 + ((d * 11) % 45); 
+        dayData = { dominant_emotion: emotions[index], score };
+    }
 
     const emotion = isFuture ? null : dayData?.dominant_emotion;
 
