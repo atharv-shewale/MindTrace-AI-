@@ -114,29 +114,38 @@ const BackgroundEmotionTracker = ({ enabled }) => {
     const rightInnerBrow = landmarks[282];
     const browDistance = Math.sqrt(Math.pow(rightInnerBrow.x - leftInnerBrow.x, 2) + Math.pow(rightInnerBrow.y - leftInnerBrow.y, 2)) / faceWidth;
 
-    // Raw Emotion Detection
+    // --- NATURAL NEURAL MAPPING (ELEVATED) ---
+    const emotions = {
+      Joy: (smileRatio - 0.36) * 15,
+      Anger: (0.23 - eyebrowRatio) * 18 + (0.14 - browDistance) * 10,
+      Surprise: (mouthRatio - 0.09) * 12,
+      Sadness: (mouthDrop - 0.001) * 70,
+      Fear: (eyebrowRatio - 0.23) * 15 + (mouthRatio * 6)
+    };
+
+    // Apply Natural Dampening & Clamping
+    Object.keys(emotions).forEach(k => {
+      emotions[k] = Math.max(0, Math.min(1.0, emotions[k]));
+    });
+
+    // Detect Compound States (Biological Weighting)
+    if (emotions.Anger > 0.3 && emotions.Joy < 0.15) emotions.Anger *= 1.25;
+    if (emotions.Surprise > 0.4 && emotions.Fear > 0.2) emotions.Fear *= 1.15;
+
     let rawEmotion = 'Neutral';
     let rawIntensity = 0.2;
-
-    if (eyebrowRatio < 0.21 || browDistance < 0.12) {
-      rawEmotion = 'Anger';
-      rawIntensity = Math.min(1.0, (0.22 - eyebrowRatio) * 15 + (0.13 - browDistance) * 5);
-    } else if (mouthRatio > 0.12 || eyebrowRatio > 0.26) {
-      rawEmotion = mouthRatio > 0.15 ? 'Surprise' : 'Fear';
-      rawIntensity = Math.min(1.0, mouthRatio * 5 + (eyebrowRatio - 0.25) * 10);
-    } else if (smileRatio > 0.39) {
-      rawEmotion = 'Joy';
-      rawIntensity = Math.min(1.0, (smileRatio - 0.38) * 12);
-    } else if (mouthDrop > 0.003) {
-      rawEmotion = 'Sadness';
-      rawIntensity = Math.min(1.0, mouthDrop * 50);
+    
+    // Find the strongest biological signal
+    const sorted = Object.entries(emotions).sort((a,b) => b[1] - a[1]);
+    if (sorted[0][1] > 0.18) {
+      rawEmotion = sorted[0][0];
+      rawIntensity = sorted[0][1];
     }
 
     // Temporal Smoothing (Hysteresis)
     emotionBufferRef.current.push({ emotion: rawEmotion, intensity: rawIntensity });
     if (emotionBufferRef.current.length > BUFFER_SIZE) emotionBufferRef.current.shift();
 
-    // Find the most frequent emotion in the buffer
     const counts = {};
     let dominant = 'Neutral';
     let maxCount = 0;
@@ -152,7 +161,7 @@ const BackgroundEmotionTracker = ({ enabled }) => {
     });
     avgIntensity /= emotionBufferRef.current.length;
 
-    // Only update if we have a clear majority (e.g., > 60% of frames)
+    // Biological Stability Threshold (60% majority)
     if (maxCount < BUFFER_SIZE * 0.6) {
       dominant = 'Neutral';
     }
@@ -167,17 +176,16 @@ const BackgroundEmotionTracker = ({ enabled }) => {
       await emotionAPI.record({
         emotion: dominant,
         intensity: avgIntensity,
-        source: 'geometric_tracker',
-        note: `SMOOTHED: ${maxCount}/${BUFFER_SIZE} majority`,
+        source: 'neural_geometric_v2',
+        note: `NEURAL_FUSION: ${maxCount}/${BUFFER_SIZE} stability`,
         timestamp: new Date().toISOString()
       });
     } catch (err) {
-      console.error("[Neural Tracker] Sync Error:", err);
+      console.error("[Neural Tracker] Elevation Sync Error:", err);
     } finally {
-      setTimeout(() => { processingRef.current = false; }, 300);
+      setTimeout(() => { processingRef.current = false; }, 250);
     }
   };
-
   return (
     <div style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }}>
       <video ref={videoRef} muted playsInline />

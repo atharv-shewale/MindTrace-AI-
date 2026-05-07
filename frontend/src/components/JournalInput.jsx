@@ -85,23 +85,37 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
       analyserRef.current.fftSize = 256;
       
       const bufferLength = analyserRef.current.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
+      const timeData = new Uint8Array(bufferLength);
+      const freqData = new Uint8Array(bufferLength);
       
       const analyze = () => {
         if (!analyserRef.current) return;
-        analyserRef.current.getByteTimeDomainData(dataArray);
+        analyserRef.current.getByteTimeDomainData(timeData);
+        analyserRef.current.getByteFrequencyData(freqData);
         
+        // 1. RMS (Volume/Energy)
         let sum = 0;
         for (let i = 0; i < bufferLength; i++) {
-          const v = (dataArray[i] - 128) / 128;
+          const v = (timeData[i] - 128) / 128;
           sum += v * v;
         }
         const rms = Math.sqrt(sum / bufferLength);
         
-        // Map RMS to a "Calmness" score (0 to 1)
-        // High volume (> 0.15) suggests stress/intensity
-        const calmScore = Math.max(0, 1 - (rms * 5));
-        audioDataRef.current.push(calmScore);
+        // 2. Frequency Variance (Pitch Stability)
+        let freqSum = 0;
+        for (let i = 0; i < bufferLength; i++) freqSum += freqData[i];
+        const avgFreq = freqSum / bufferLength;
+        
+        let variance = 0;
+        for (let i = 0; i < bufferLength; i++) variance += Math.pow(freqData[i] - avgFreq, 2);
+        const pitchJitter = Math.sqrt(variance / bufferLength) / 128;
+
+        // Biological Fusion Score: Calmness = High stability (low jitter) + Moderate volume
+        const stabilityScore = Math.max(0, 1 - pitchJitter);
+        const energyScore = Math.max(0, 1 - (rms * 4));
+        
+        const finalAudioScore = (stabilityScore * 0.4) + (energyScore * 0.6);
+        audioDataRef.current.push(finalAudioScore);
         
         if (audioContextRef.current.state !== 'closed') {
           requestAnimationFrame(analyze);
