@@ -81,17 +81,43 @@ const AppContent = () => {
         const data = await response.json();
         
         if (data.video_url) {
-          // Open in a small floating popup window in the bottom-right corner
-          const width = 450;
-          const height = 320;
-          const left = window.screen.width - width - 40;
-          const top = window.screen.height - height - 100; // Account for taskbar
+          // Extract Video ID for Embedding
+          const videoId = data.video_url.split('v=')[1]?.split('&')[0];
+          const embedUrl = videoId 
+            ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&modestbranding=1` 
+            : data.video_url;
+
+          // Open in a ultra-small, borderless widget in the bottom-right corner
+          const width = 380;
+          const height = 240;
+          const left = window.screen.width - width - 20;
+          const top = window.screen.height - height - 60;
           
-          window.open(
-            data.video_url, 
+          const popup = window.open(
+            '', 
             'MindTraceIntervention', 
             `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,resizable=no`
           );
+
+          if (popup) {
+            popup.document.write(`
+              <html>
+                <body style="margin:0;padding:0;background:#000;overflow:hidden;font-family:sans-serif;">
+                  <div style="position:absolute;top:10px;left:10px;background:rgba(99,102,241,0.9);color:white;padding:4px 10px;border-radius:10px;font-size:10px;font-weight:bold;z-index:10;letter-spacing:1px;box-shadow:0 4px 15px rgba(0,0,0,0.5)">
+                    NEURAL INTERVENTION ACTIVE
+                  </div>
+                  <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src="${embedUrl}" 
+                    frameborder="0" 
+                    allow="autoplay; encrypted-media" 
+                    allowfullscreen>
+                  </iframe>
+                </body>
+              </html>
+            `);
+          }
         }
       } catch (err) {
         console.error('Failed to trigger intervention:', err);
