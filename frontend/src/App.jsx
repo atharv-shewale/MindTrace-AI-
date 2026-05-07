@@ -205,8 +205,8 @@ const AppContent = () => {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.5)]">
-                <Brain className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.5)] overflow-hidden">
+                <img src="/logo.png" alt="MindTrace Logo" className="w-full h-full object-cover" />
               </div>
               <h1 className="text-xl font-black tracking-tighter text-white">MINDTRACE<span className="text-indigo-500">AI+</span></h1>
             </div>
