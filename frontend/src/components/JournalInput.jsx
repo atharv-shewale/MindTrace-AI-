@@ -70,13 +70,63 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
     };
   }, []);
 
+  // Audio Analysis Refs
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const audioDataRef = useRef([]);
+
+  const startAudioAnalysis = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      const source = audioContextRef.current.createMediaStreamSource(stream);
+      source.connect(analyserRef.current);
+      analyserRef.current.fftSize = 256;
+      
+      const bufferLength = analyserRef.current.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      const analyze = () => {
+        if (!analyserRef.current) return;
+        analyserRef.current.getByteTimeDomainData(dataArray);
+        
+        let sum = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          const v = (dataArray[i] - 128) / 128;
+          sum += v * v;
+        }
+        const rms = Math.sqrt(sum / bufferLength);
+        
+        // Map RMS to a "Calmness" score (0 to 1)
+        // High volume (> 0.15) suggests stress/intensity
+        const calmScore = Math.max(0, 1 - (rms * 5));
+        audioDataRef.current.push(calmScore);
+        
+        if (audioContextRef.current.state !== 'closed') {
+          requestAnimationFrame(analyze);
+        }
+      };
+      
+      analyze();
+    } catch (err) {
+      console.error("Audio analysis failed:", err);
+    }
+  };
+
   const toggleListening = () => {
     if (isListening) {
       recognitionRef.current?.stop();
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+        analyserRef.current = null;
+      }
       setIsListening(false);
     } else {
       recognitionRef.current?.start();
       setIsListening(true);
+      startAudioAnalysis();
     }
   };
 
@@ -133,10 +183,15 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
         ? sessionMoods.reduce((a, b) => a + b, 0) / sessionMoods.length 
         : 0.6;
 
+      // Calculate Audio Score (average of vocal energy)
+      const audioScore = audioDataRef.current.length > 0
+        ? audioDataRef.current.reduce((a, b) => a + b, 0) / audioDataRef.current.length
+        : 0.6;
+
       const res = await journalAPI.create({
         content: text,
         mood_intensity: selectedMood || 0.6,
-        audio_score: isListening ? 0.4 : 0.6, // Simulate lower positivity if using voice in distress
+        audio_score: audioScore,
         video_score: videoScore
       });
       setText('');
