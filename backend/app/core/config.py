@@ -39,18 +39,24 @@ class Settings(BaseSettings):
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Any) -> List[str]:
+        def normalize(o: str) -> str:
+            o = o.strip().rstrip('/')
+            if not o.startswith("http"):
+                o = f"https://{o}"
+            return o
+
         if isinstance(v, str):
             if v.startswith("[") and v.endswith("]"):
                 try:
                     import json
                     parsed = json.loads(v)
                     if isinstance(parsed, list):
-                        return [str(i).strip().rstrip('/') for i in parsed if i]
+                        return [normalize(str(i)) for i in parsed if i]
                 except Exception:
                     pass
-            return [i.strip().rstrip('/') for i in v.split(",") if i.strip()]
+            return [normalize(i) for i in v.split(",") if i.strip()]
         elif isinstance(v, list):
-            return [str(i).strip().rstrip('/') for i in v if i]
+            return [normalize(str(i)) for i in v if i]
         return v if v else []
 
     HUGGINGFACE_TOKEN: Optional[str] = None

@@ -38,7 +38,11 @@ async def signup(user_data: AuthSignupRequest):
     """Register a new user"""
     try:
         db = get_database()
-
+        if db is None:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Database connection is not available."
+            )
         name = user_data.name or user_data.full_name or user_data.email.split("@")[0]
         username = user_data.username or name.lower().replace(" ", "_")
         
@@ -95,7 +99,7 @@ async def signup(user_data: AuthSignupRequest):
 async def login(credentials: AuthLoginRequest):
     """Login user"""
     db = get_database()
-    if not db:
+    if db is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database connection is not available. Please check your internet connection or database configuration."
