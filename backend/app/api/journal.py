@@ -25,16 +25,21 @@ async def create_journal_entry(
     from app.services.huggingface_service import huggingface_service
     from app.services.groq_service import groq_service
     
-    # 1. High-Accuracy NLP Analysis (Hugging Face Fine-tuned Model)
+    # 1. Fast Initial NLP Analysis (Hugging Face DistilRoBERTa)
     hf_analysis = await huggingface_service.analyze_emotions(entry_data.content)
     
-    # 2. Advanced Insights & Suggestions (Groq LLM)
-    # We pass the HF results to Groq to get even better advice
-    ai_analysis = await groq_service.analyze_journal_sentiment(entry_data.content)
+    # 2. Advanced Psychological Synthesis (Groq Llama-3-70b)
+    # Pass the initial HF scan as context, but let the LLM make the final, more accurate determination.
+    ai_analysis = await groq_service.analyze_journal_sentiment(
+        text=entry_data.content, 
+        hf_context=hf_analysis
+    )
     
-    # Merge findings: HF for pure detection, Groq for context
-    dominant_emotion = hf_analysis["dominant_emotion"].lower()
-    intensity = hf_analysis["intensity"]
+    # 3. Merge findings: Prioritize Groq's high-accuracy analysis, fallback to HF
+    dominant_emotion = ai_analysis.get("dominant_emotion", hf_analysis["dominant_emotion"]).lower()
+    
+    # Use Groq's calculated intensity if available, otherwise use HF's confidence score
+    intensity = ai_analysis.get("intensity", hf_analysis["intensity"])
     
     # Create entry document
     entry_doc = {

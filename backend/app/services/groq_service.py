@@ -113,21 +113,30 @@ class GroqService:
                 {"title": "Digital Detox", "desc": "Step away from screens for 15 minutes.", "type": "tech"}
             ]
 
-    async def analyze_journal_sentiment(self, text: str) -> dict:
-        """Perform high-accuracy sentiment and emotional analysis on journal text"""
+    async def analyze_journal_sentiment(self, text: str, hf_context: dict = None) -> dict:
+        """Perform high-accuracy sentiment and emotional analysis on journal text using advanced psychological framing."""
         if not self.client:
             return {"dominant_emotion": "neutral", "intensity": 0.5, "suggestions": ["Record your thoughts more often."]}
 
         try:
+            hf_hint = ""
+            if hf_context:
+                hf_hint = f"Initial neural network scan suggests: {hf_context.get('dominant_emotion')} with intensity {hf_context.get('intensity')}. Use this as baseline context but provide your own deeper analysis."
+                
             prompt = (
-                f"Analyze the following journal entry for deep emotional patterns and underlying psychological states: \"{text}\". "
-                "Identify the dominant emotion, the intensity (0-1), and provide 3 highly personalized wellness suggestions. "
-                "Format as JSON: {\"dominant_emotion\": \"...\", \"intensity\": 0.0, \"suggestions\": [\"...\", \"...\", \"...\"]}"
+                f"Analyze the following journal entry for deep emotional patterns, subtext, and underlying psychological states: \"{text}\"\n\n"
+                f"{hf_hint}\n\n"
+                "Task: Perform a highly precise psychological evaluation.\n"
+                "1. Identify the exact 'dominant_emotion' (e.g., joy, sadness, anger, anxiety, peace, frustration, grief, hope).\n"
+                "2. Calculate the 'intensity' of this emotion from 0.0 to 1.0 based on the extremity of the language used.\n"
+                "3. Provide 3 highly personalized, actionable wellness suggestions tailored EXACTLY to the nuances of their entry.\n"
+                "Format strictly as JSON: {\"dominant_emotion\": \"...\", \"intensity\": 0.0, \"suggestions\": [\"...\", \"...\", \"...\"]}"
             )
             chat_completion = await self.client.chat.completions.create(
-                messages=[{"role": "system", "content": "You are an expert psychological analyzer for MindTrace AI+."},
+                messages=[{"role": "system", "content": "You are an expert psychological analyzer for MindTrace AI+. You detect subtle emotional subtext that standard algorithms miss."},
                           {"role": "user", "content": prompt}],
                 model="llama-3.3-70b-versatile",
+                temperature=0.3, # Lower temperature for more analytical/precise output
                 response_format={"type": "json_object"}
             )
             import json

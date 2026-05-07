@@ -12,7 +12,10 @@ import {
   Star,
   Bell,
   Clock,
-  LayoutGrid
+  LayoutGrid,
+  Compass,
+  Music,
+  Coffee
 } from 'lucide-react';
 import { analyticsAPI } from '../utils/api';
 import { 
@@ -33,7 +36,7 @@ import {
 import { notificationSystem } from '../utils/notifications';
 import CalendarInsights from './CalendarInsights';
 
-const Dashboard = ({ onNavigate, currentMood }) => {
+const Dashboard = ({ user, onNavigate, currentMood }) => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -140,6 +143,13 @@ const Dashboard = ({ onNavigate, currentMood }) => {
         </div>
         
         <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-2xl">
+            <span className="text-xl">🔥</span>
+            <div>
+              <p className="text-amber-500 text-[10px] font-black tracking-widest uppercase">Current Streak</p>
+              <p className="text-amber-400 font-bold leading-none">{analytics?.streak || 0} Days</p>
+            </div>
+          </div>
           <button 
             onClick={() => setNotificationsEnabled(!notificationsEnabled)}
             className={`p-3 border rounded-2xl transition-all ${
@@ -329,6 +339,55 @@ const Dashboard = ({ onNavigate, currentMood }) => {
           >
             Trigger Global Recalibration
           </button>
+        </div>
+
+        {/* Personalized Activities - NEW GRID BLOCK */}
+        <div className="lg:col-span-4 bento-card bg-gradient-to-r from-purple-500/5 to-indigo-500/5 border-purple-500/20">
+          <div className="flex items-center gap-2 mb-6">
+            <Compass className="w-5 h-5 text-purple-400" />
+            <span className="text-gray-400 text-xs font-black tracking-widest uppercase">Personalized Activities</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {(!user?.interests || user?.interests?.includes('nature')) && (
+              <div className="p-6 bg-black/40 border border-white/5 rounded-3xl hover:border-emerald-500/30 transition-all cursor-pointer group">
+                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
+                  <Compass className="w-5 h-5 text-emerald-500" />
+                </div>
+                <h4 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400">Nature Walk</h4>
+                <p className="text-sm text-gray-500">Based on your love for the outdoors. A 20-min walk can reset your neural state.</p>
+              </div>
+            )}
+            
+            {(!user?.interests || user?.interests?.includes('music')) && (
+              <div className="p-6 bg-black/40 border border-white/5 rounded-3xl hover:border-indigo-500/30 transition-all cursor-pointer group">
+                <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-4">
+                  <Music className="w-5 h-5 text-indigo-500" />
+                </div>
+                <h4 className="text-lg font-bold text-white mb-2 group-hover:text-indigo-400">Deep Listening</h4>
+                <p className="text-sm text-gray-500">Listen to a Lo-Fi ambient track to stabilize your focus index.</p>
+              </div>
+            )}
+
+            {(!user?.interests || user?.interests?.includes('reading')) && (
+              <div className="p-6 bg-black/40 border border-white/5 rounded-3xl hover:border-purple-500/30 transition-all cursor-pointer group">
+                <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center mb-4">
+                  <Coffee className="w-5 h-5 text-purple-500" />
+                </div>
+                <h4 className="text-lg font-bold text-white mb-2 group-hover:text-purple-400">Cafe Reading</h4>
+                <p className="text-sm text-gray-500">Spend 30 minutes reading at a local cafe to decompress.</p>
+              </div>
+            )}
+            
+            {user?.interests?.length > 0 && !user?.interests?.includes('nature') && !user?.interests?.includes('music') && !user?.interests?.includes('reading') && (
+              <div className="p-6 bg-black/40 border border-white/5 rounded-3xl hover:border-amber-500/30 transition-all cursor-pointer group">
+                <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center mb-4">
+                  <Sparkles className="w-5 h-5 text-amber-500" />
+                </div>
+                <h4 className="text-lg font-bold text-white mb-2 group-hover:text-amber-400">Creative Flow</h4>
+                <p className="text-sm text-gray-500">Engage in your interest "{user.interests[0]}" to channel your current energy positively.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

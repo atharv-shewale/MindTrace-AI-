@@ -119,6 +119,29 @@ async def get_analytics_summary(
     suggestions = results[1] if not isinstance(results[1], Exception) else ["Practice deep breathing."]
     hangouts = results[2] if not isinstance(results[2], Exception) else ["A quiet park."]
     
+    # 6. Calculate Streak
+    all_journals = await db.journal_entries.find({"user_id": user_id}, {"created_at": 1}).sort("created_at", -1).to_list(None)
+    streak = 0
+    if all_journals:
+        current_date = datetime.utcnow().date()
+        first_entry_date = all_journals[0]["created_at"].date()
+        
+        # Streak continues if they journaled today or yesterday
+        if (current_date - first_entry_date).days <= 1:
+            streak = 1
+            check_date = first_entry_date
+            
+            # Count consecutive days backwards
+            for j in all_journals[1:]:
+                j_date = j["created_at"].date()
+                if (check_date - j_date).days == 1:
+                    streak += 1
+                    check_date = j_date
+                elif (check_date - j_date).days == 0:
+                    continue # Multiple entries same day
+                else:
+                    break # Streak broken
+    
     return {
         "wellness_index": round(current_wellness, 1),
         "wellness_change_pct": round(change, 1),
@@ -127,7 +150,8 @@ async def get_analytics_summary(
         "insight": insight,
         "suggestions": suggestions,
         "decompression_hangouts": hangouts,
-        "background_tracking_enabled": user.get("background_tracking_enabled", False)
+        "background_tracking_enabled": user.get("background_tracking_enabled", False),
+        "streak": streak
     }
 @router.post("/report/generate")
 async def generate_manual_report(

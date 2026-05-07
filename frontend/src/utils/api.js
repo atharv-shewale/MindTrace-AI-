@@ -53,6 +53,7 @@ export const journalAPI = {
   create: (data) => apiClient.post('/api/journal/create', data),
   list: (params) => apiClient.get('/api/journal/list', { params }),
   get: (id) => apiClient.get(`/api/journal/${id}`),
+  delete: (id) => apiClient.delete(`/api/journal/${id}`),
 };
 
 export const interventionAPI = {

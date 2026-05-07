@@ -13,7 +13,8 @@ import {
   Smile,
   Frown,
   Meh,
-  AlertCircle
+  AlertCircle,
+  Trash2
 } from 'lucide-react';
 
 const JournalHistory = () => {
@@ -34,6 +35,22 @@ const JournalHistory = () => {
       console.error('Failed to fetch journal entries', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (e, entryId) => {
+    e.stopPropagation();
+    if (window.confirm("Are you sure you want to delete this journal entry?")) {
+      try {
+        await journalAPI.delete(entryId);
+        setEntries(prev => prev.filter(entry => entry._id !== entryId));
+        if (selectedEntry?._id === entryId) {
+          setSelectedEntry(null);
+        }
+      } catch (err) {
+        console.error("Failed to delete entry", err);
+        alert("Failed to delete entry.");
+      }
     }
   };
 
@@ -98,11 +115,16 @@ const JournalHistory = () => {
                         {entry.dominant_emotion || 'Analyzing'}
                       </span>
                     </div>
+                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${entry.positivity > 0.6 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : entry.positivity > 0.4 ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-amber-500/10 border-amber-500/20 text-amber-500'}`}>
+                      <span className="text-[10px] font-black tracking-widest uppercase">
+                        Score: {Math.round((entry.positivity || 0) * 100)}
+                      </span>
+                    </div>
                   </div>
                   <div className="flex items-center gap-4 text-gray-500 text-xs font-medium">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5" />
-                      {new Date(entry.created_at).toLocaleDateString(undefined, { 
+                      {new Date(entry.created_at.endsWith('Z') ? entry.created_at : entry.created_at + 'Z').toLocaleDateString(undefined, { 
                         year: 'numeric', 
                         month: 'short', 
                         day: 'numeric' 
@@ -110,7 +132,7 @@ const JournalHistory = () => {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <History className="w-3.5 h-3.5" />
-                      {new Date(entry.created_at).toLocaleTimeString(undefined, { 
+                      {new Date(entry.created_at.endsWith('Z') ? entry.created_at : entry.created_at + 'Z').toLocaleTimeString(undefined, { 
                         hour: '2-digit', 
                         minute: '2-digit' 
                       })}
@@ -118,7 +140,16 @@ const JournalHistory = () => {
                   </div>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-gray-700 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={(e) => handleDelete(e, entry._id)}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                  title="Delete Entry"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+                <ChevronRight className="w-5 h-5 text-gray-700 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </div>
             </div>
           ))}
           
@@ -150,7 +181,7 @@ const JournalHistory = () => {
                 <div>
                   <h2 className="text-xl font-black tracking-tight">Journal Details</h2>
                   <p className="text-[10px] font-black tracking-[0.2em] text-indigo-500 uppercase">
-                    Captured: {new Date(selectedEntry.created_at).toLocaleString()}
+                    Captured: {new Date(selectedEntry.created_at.endsWith('Z') ? selectedEntry.created_at : selectedEntry.created_at + 'Z').toLocaleString()}
                   </p>
                 </div>
               </div>

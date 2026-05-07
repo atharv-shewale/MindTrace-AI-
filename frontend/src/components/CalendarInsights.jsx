@@ -41,18 +41,25 @@ const CalendarInsights = ({ history = [] }) => {
   };
 
   for (let d = 1; d <= totalDays; d++) {
-    const isToday = d === new Date().getDate() && currentMonth.getMonth() === new Date().getMonth();
-    const isSelected = d === selectedDate.getDate() && currentMonth.getMonth() === selectedDate.getMonth();
+    const isToday = d === new Date().getDate() && currentMonth.getMonth() === new Date().getMonth() && currentMonth.getFullYear() === new Date().getFullYear();
+    const isSelected = d === selectedDate.getDate() && currentMonth.getMonth() === selectedDate.getMonth() && currentMonth.getFullYear() === selectedDate.getFullYear();
     const dayData = historyMap[d];
-    const emotion = dayData?.dominant_emotion || (d % 3 === 0 ? 'Joy' : d % 4 === 0 ? 'Sadness' : null);
+    
+    // Check if date is in the future
+    const dateToCheck = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
+    const isFuture = dateToCheck > new Date();
+
+    const emotion = isFuture ? null : dayData?.dominant_emotion;
 
     days.push(
       <div 
         key={d} 
-        onClick={() => setSelectedDate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d))}
-        className={`h-20 border border-white/5 p-2 transition-all cursor-pointer group relative ${
-          isSelected ? 'ring-1 ring-indigo-500 z-10 scale-[1.02] bg-indigo-500/20' : 'hover:bg-white/10'
-        } ${dayData ? 'bg-indigo-500/10' : ''}`}
+        onClick={() => !isFuture && setSelectedDate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d))}
+        className={`h-20 border border-white/5 p-2 transition-all group relative ${
+          isFuture ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:bg-white/10'
+        } ${
+          isSelected && !isFuture ? 'ring-1 ring-indigo-500 z-10 scale-[1.02] bg-indigo-500/20' : ''
+        } ${dayData && !isFuture ? 'bg-indigo-500/10' : ''}`}
       >
         <div className="flex justify-between items-start">
           <span className={`text-[10px] font-black tracking-widest ${isToday ? 'text-indigo-400' : 'text-gray-500'}`}>
@@ -71,7 +78,7 @@ const CalendarInsights = ({ history = [] }) => {
             <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden mt-1">
               <div 
                 className={`h-full ${dayData?.score > 70 ? 'bg-emerald-500' : 'bg-indigo-500'}`} 
-                style={{ width: `${dayData?.score || Math.random() * 60 + 40}%` }}
+                style={{ width: `${dayData?.score || 50}%` }}
               ></div>
             </div>
           </div>
