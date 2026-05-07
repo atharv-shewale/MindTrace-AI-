@@ -56,7 +56,7 @@ const CalendarInsights = ({ history = [] }) => {
     // Inject stable mock data for past days if no real emotion data exists to populate the calendar
     if ((!dayData || !dayData.dominant_emotion) && isPast) {
         const emotions = ['Joy', 'Neutral', 'Sadness', 'Joy', 'Surprise', 'Neutral', 'Anger'];
-        const index = (d * 7 + currentMonth.getMonth() * 3) % emotions.length;
+        const index = (d * 3 + currentMonth.getMonth() * 5) % emotions.length;
         const score = 50 + ((d * 11) % 45); 
         dayData = { 
             ...dayData, 
