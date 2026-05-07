@@ -81,17 +81,17 @@ const AppContent = () => {
         const data = await response.json();
         
         if (data.video_url) {
-          // Extract Video ID for Embedding
+          const isChannel = data.video_url.includes('@');
           const videoId = data.video_url.split('v=')[1]?.split('&')[0];
           const embedUrl = videoId 
-            ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&modestbranding=1` 
-            : data.video_url;
+            ? `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1` 
+            : null;
 
-          // Open in a ultra-small, borderless widget in the bottom-right corner
-          const width = 380;
-          const height = 240;
-          const left = window.screen.width - width - 20;
-          const top = window.screen.height - height - 60;
+          // VERY small pop up in the corner
+          const width = 300;
+          const height = 180;
+          const left = window.screen.width - width - 15;
+          const top = window.screen.height - height - 55;
           
           const popup = window.open(
             '', 
@@ -100,23 +100,28 @@ const AppContent = () => {
           );
 
           if (popup) {
-            popup.document.write(`
-              <html>
-                <body style="margin:0;padding:0;background:#000;overflow:hidden;font-family:sans-serif;">
-                  <div style="position:absolute;top:10px;left:10px;background:rgba(99,102,241,0.9);color:white;padding:4px 10px;border-radius:10px;font-size:10px;font-weight:bold;z-index:10;letter-spacing:1px;box-shadow:0 4px 15px rgba(0,0,0,0.5)">
-                    NEURAL INTERVENTION ACTIVE
-                  </div>
-                  <iframe 
-                    width="100%" 
-                    height="100%" 
-                    src="${embedUrl}" 
-                    frameborder="0" 
-                    allow="autoplay; encrypted-media" 
-                    allowfullscreen>
-                  </iframe>
-                </body>
-              </html>
-            `);
+            if (isChannel || !embedUrl) {
+              // If it's a channel, we can't embed it, so we redirect the tiny window to the channel directly
+              popup.location.href = data.video_url;
+            } else {
+              popup.document.write(`
+                <html>
+                  <body style="margin:0;padding:0;background:#000;overflow:hidden;font-family:sans-serif;">
+                    <div style="position:absolute;top:5px;left:5px;background:rgba(99,102,241,0.9);color:white;padding:2px 8px;border-radius:6px;font-size:8px;font-weight:bold;z-index:10;letter-spacing:0.5px;">
+                      NEURAL RESET
+                    </div>
+                    <iframe 
+                      width="100%" 
+                      height="100%" 
+                      src="${embedUrl}" 
+                      frameborder="0" 
+                      allow="autoplay; encrypted-media" 
+                      allowfullscreen>
+                    </iframe>
+                  </body>
+                </html>
+              `);
+            }
           }
         }
       } catch (err) {
