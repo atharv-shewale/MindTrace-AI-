@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, BookOpen, BarChart3, Settings as SettingsIcon, Brain, LogOut, X, Menu, MessageCircle } from 'lucide-react';
+import { Home, BookOpen, BarChart3, Settings as SettingsIcon, Brain, LogOut, X, Menu, MessageCircle, Sun, Moon } from 'lucide-react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
@@ -28,6 +28,16 @@ const AppContent = () => {
   const [onboardingComplete, setOnboardingComplete] = React.useState(false);
   const [showFunnyVideo, setShowFunnyVideo] = React.useState(false);
   const [currentEmotionData, setCurrentEmotionData] = React.useState({ emotion: 'Neutral', intensity: 0, timestamp: new Date() });
+  const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'dark');
+
+  React.useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const [negativeStreak, setNegativeStreak] = React.useState(0);
   const NEGATIVE_STREAK_THRESHOLD = 8;
@@ -198,9 +208,9 @@ const AppContent = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white selection:bg-indigo-500/30 font-inter">
+    <div className="min-h-screen bg-background text-foreground selection:bg-indigo-500/30 font-inter transition-colors duration-500">
       {/* Header */}
-      <header className="bg-[#000000]/80 backdrop-blur-md border-b border-[#1a1a1a] sticky top-0 z-40">
+      <header className="bg-background/80 backdrop-blur-md border-b border-borderglass sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
@@ -208,7 +218,7 @@ const AppContent = () => {
               <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.5)] overflow-hidden">
                 <img src="/logo.png" alt="MindTrace Logo" className="w-full h-full object-cover" />
               </div>
-              <h1 className="text-xl font-black tracking-tighter text-white">MINDTRACE<span className="text-indigo-500">AI+</span></h1>
+              <h1 className="text-xl font-black tracking-tighter text-foreground">MINDTRACE<span className="text-indigo-500">AI+</span></h1>
             </div>
 
             {/* Desktop Navigation */}
@@ -221,8 +231,8 @@ const AppContent = () => {
                     onClick={() => setCurrentPage(item.id)}
                     className={`px-5 py-2.5 rounded-2xl text-[10px] font-black tracking-[0.2em] uppercase transition-all duration-300 flex items-center gap-3 ${
                       currentPage === item.id
-                        ? 'bg-white/5 text-white border border-white/10 shadow-lg'
-                        : 'text-gray-500 hover:text-white hover:bg-white/5'
+                        ? 'bg-glass text-foreground border border-borderglass shadow-lg'
+                        : 'text-muted hover:text-foreground hover:bg-glass'
                     }`}
                   >
                     <Icon className={`w-3.5 h-3.5 ${currentPage === item.id ? 'text-indigo-500' : ''}`} />
@@ -232,10 +242,18 @@ const AppContent = () => {
               })}
             </nav>
 
-            {/* User Info & Logout */}
-            <div className="flex items-center gap-6">
-              <div className="hidden sm:block text-right">
-                <p className="text-sm font-bold text-white">{user?.full_name || user?.name || user?.email.split('@')[0]}</p>
+            {/* User Info & Theme Toggle */}
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="p-2 rounded-xl bg-glass border border-borderglass text-muted hover:text-foreground transition-all active:scale-95"
+                title="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+              
+              <div className="hidden sm:block text-right ml-2">
+                <p className="text-sm font-bold text-foreground">{user?.full_name || user?.name || user?.email.split('@')[0]}</p>
                 <div className="flex items-center justify-end gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
                   <p className="text-[10px] font-black tracking-widest text-emerald-500 uppercase">Connected</p>
@@ -244,7 +262,7 @@ const AppContent = () => {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden w-11 h-11 bg-[#1a1a1a] border border-[#333] flex items-center justify-center rounded-2xl text-gray-400"
+                className="md:hidden w-11 h-11 bg-surface border border-borderglass flex items-center justify-center rounded-2xl text-muted"
               >
                 {mobileMenuOpen ? (
                   <X className="w-6 h-6" />
@@ -269,8 +287,8 @@ const AppContent = () => {
                     }}
                     className={`w-full text-left px-5 py-4 rounded-2xl text-xs font-black tracking-widest uppercase transition-all flex items-center gap-4 ${
                       currentPage === item.id
-                        ? 'bg-white/5 text-white border border-white/10'
-                        : 'text-gray-500'
+                        ? 'bg-glass text-foreground border border-borderglass'
+                        : 'text-muted'
                     }`}
                   >
                     <Icon className={`w-5 h-5 ${currentPage === item.id ? 'text-indigo-500' : ''}`} />

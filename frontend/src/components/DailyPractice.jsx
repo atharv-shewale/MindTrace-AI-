@@ -39,7 +39,7 @@ const DailyPractice = ({ onBack }) => {
       <div className="flex items-center justify-between">
         <button 
           onClick={onBack}
-          className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors group"
+          className="flex items-center gap-2 text-muted hover:text-foreground transition-colors group"
         >
           <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
           <span className="text-[10px] font-black tracking-widest uppercase">Back to Control</span>
@@ -52,7 +52,7 @@ const DailyPractice = ({ onBack }) => {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-gray-400 text-[10px] font-black tracking-[0.3em] uppercase mb-1">Active Optimization</h2>
+        <h2 className="text-muted text-[10px] font-black tracking-[0.3em] uppercase mb-1">Active Optimization</h2>
         <h1 className="text-4xl font-black tracking-tight mb-8">Daily Neuro-Practices</h1>
         
         <div className="grid grid-cols-1 gap-6">
@@ -67,21 +67,21 @@ const DailyPractice = ({ onBack }) => {
               <div className="flex items-start justify-between">
                 <div className="flex gap-6">
                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${
-                    completed.includes(practice.id) ? 'bg-emerald-500/20' : 'bg-white/5 group-hover:bg-white/10'
+                    completed.includes(practice.id) ? 'bg-emerald-500/20' : 'bg-glass group-hover:bg-glass brightness-110'
                   }`}>
                     {completed.includes(practice.id) ? <CheckCircle2 className="w-6 h-6 text-emerald-500" /> : practice.icon}
                   </div>
                   <div>
-                    <h3 className={`text-xl font-bold mb-2 ${completed.includes(practice.id) ? 'text-emerald-500 line-through' : 'text-white'}`}>
+                    <h3 className={`text-xl font-bold mb-2 ${completed.includes(practice.id) ? 'text-emerald-500 line-through' : 'text-foreground'}`}>
                       {practice.title}
                     </h3>
-                    <p className="text-gray-500 text-sm max-w-lg leading-relaxed">
+                    <p className="text-muted text-sm max-w-lg leading-relaxed">
                       {practice.desc}
                     </p>
                   </div>
                 </div>
                 <div className={`text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full ${
-                  completed.includes(practice.id) ? 'bg-emerald-500/10 text-emerald-500' : 'bg-white/5 text-gray-500'
+                  completed.includes(practice.id) ? 'bg-emerald-500/10 text-emerald-500' : 'bg-glass text-muted'
                 }`}>
                   {completed.includes(practice.id) ? 'Completed' : `+${practice.points} Stability`}
                 </div>

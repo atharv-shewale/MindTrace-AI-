@@ -134,7 +134,7 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
     <div className="max-w-4xl mx-auto space-y-8 pb-20">
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-gray-400 text-sm font-bold tracking-widest uppercase mb-1">Journaling</h2>
+          <h2 className="text-muted text-sm font-bold tracking-widest uppercase mb-1">Journaling</h2>
           <h1 className="text-4xl font-black tracking-tight">Daily Journal</h1>
         </div>
         <div className={`flex items-center gap-2 px-4 py-2 border rounded-xl transition-all duration-500 ${loading ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
@@ -150,7 +150,7 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
           value={text}
           onChange={handleTextChange}
           placeholder="How was your day? Write your thoughts here..."
-          className="w-full bg-transparent text-xl font-medium text-white placeholder:text-gray-700 border-none focus:ring-0 resize-none h-64 transition-all"
+          className="w-full bg-transparent text-xl font-medium text-foreground placeholder:text-gray-700 border-none focus:ring-0 resize-none h-64 transition-all"
         />
 
         {/* Success Message */}
@@ -163,7 +163,7 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
         
         <div className="flex flex-wrap items-center justify-between gap-6 pt-8 border-t border-[#1a1a1a]">
           <div className="flex items-center gap-3">
-            <p className="text-[10px] font-black tracking-widest text-gray-500 uppercase">How do you feel?</p>
+            <p className="text-[10px] font-black tracking-widest text-muted uppercase">How do you feel?</p>
             <div className="flex gap-2">
               {moods.map((mood) => (
                 <button
@@ -172,7 +172,7 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
                   className={`px-3 py-1.5 rounded-xl text-[10px] font-black tracking-widest uppercase border transition-all ${
                     selectedMood === mood.value
                       ? `${mood.color} scale-105 shadow-lg`
-                      : 'border-white/5 text-gray-600 hover:text-gray-400 hover:bg-white/5'
+                      : 'border-borderglass text-gray-600 hover:text-muted hover:bg-glass'
                   }`}
                 >
                   {mood.label}
@@ -186,8 +186,8 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
               onClick={toggleListening}
               className={`w-11 h-11 flex items-center justify-center rounded-2xl transition-all ${
                 isListening 
-                  ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
-                  : 'bg-[#1a1a1a] border border-[#333] text-gray-400 hover:text-white'
+                  ? 'bg-red-500 text-foreground animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
+                  : 'bg-[#1a1a1a] border border-[#333] text-muted hover:text-foreground'
               }`}
               title={isListening ? 'Stop Listening' : 'Start Voice-to-Text'}
             >
@@ -196,7 +196,7 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
             <button
               onClick={handleSubmit}
               disabled={!text.trim() || saving}
-              className="px-8 py-3 bg-indigo-600 rounded-2xl text-xs font-black tracking-widest uppercase text-white shadow-[0_10px_20px_rgba(99,102,241,0.3)] hover:bg-indigo-500 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
+              className="px-8 py-3 bg-indigo-600 rounded-2xl text-xs font-black tracking-widest uppercase text-foreground shadow-[0_10px_20px_rgba(99,102,241,0.3)] hover:bg-indigo-500 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
             >
               {saving ? <Sparkles className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               Save Entry
@@ -209,18 +209,18 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
         <div className="bento-card border-emerald-500/20 bg-emerald-500/5">
           <div className="flex items-center gap-2 mb-4">
             <Heart className="w-4 h-4 text-emerald-500" />
-            <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Latest Archive</span>
+            <span className="text-muted text-[10px] font-black tracking-widest uppercase">Latest Archive</span>
           </div>
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-xl font-black mb-1 capitalize">Primary Emotion: {lastSynced.dominant_emotion}</h3>
-              <p className="text-gray-500 text-xs font-bold tracking-widest uppercase italic">The cloud has assimilated your state.</p>
+              <p className="text-muted text-xs font-bold tracking-widest uppercase italic">The cloud has assimilated your state.</p>
             </div>
             <div className="flex gap-3">
               {['sadness', 'anger', 'fear', 'anxiety'].includes(lastSynced.dominant_emotion?.toLowerCase()) && (
                 <button 
                   onClick={() => onNavigate('companion')}
-                  className="px-4 py-2 bg-indigo-600 rounded-xl text-[10px] font-black tracking-widest uppercase text-white hover:bg-indigo-500 transition-all shadow-lg"
+                  className="px-4 py-2 bg-indigo-600 rounded-xl text-[10px] font-black tracking-widest uppercase text-foreground hover:bg-indigo-500 transition-all shadow-lg"
                 >
                   Talk to Companion
                 </button>
@@ -238,11 +238,11 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
           <div className="bento-card">
             <div className="flex items-center gap-2 mb-4">
               <Zap className="w-4 h-4 text-amber-400" />
-              <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Detection Result</span>
+              <span className="text-muted text-[10px] font-black tracking-widest uppercase">Detection Result</span>
             </div>
             <h3 className="text-2xl font-black mb-1 capitalize">{analysis.dominant_emotion}</h3>
-            <p className="text-gray-500 text-xs font-bold tracking-widest uppercase mb-4">Dominant Signal</p>
-            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+            <p className="text-muted text-xs font-bold tracking-widest uppercase mb-4">Dominant Signal</p>
+            <div className="h-2 w-full bg-glass rounded-full overflow-hidden">
               <div 
                 className="h-full bg-indigo-500 rounded-full transition-all duration-1000"
                 style={{ width: `${analysis.dominant_intensity * 100}%` }}
@@ -253,17 +253,17 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
           <div className="bento-card">
             <div className="flex items-center gap-2 mb-6">
               <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">AI Suggestions</span>
+              <span className="text-muted text-[10px] font-black tracking-widest uppercase">AI Suggestions</span>
             </div>
             <div className="space-y-4">
               {analysis.suggestions?.map((suggestion, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-3 bg-white/5 rounded-2xl border border-white/5 group-hover:border-emerald-500/20 transition-all">
+                <div key={idx} className="flex items-start gap-3 p-3 bg-glass rounded-2xl border border-borderglass group-hover:border-emerald-500/20 transition-all">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5"></div>
                   <p className="text-gray-300 text-xs font-medium leading-relaxed">{suggestion}</p>
                 </div>
               ))}
               {!analysis.suggestions?.length && (
-                <p className="text-gray-500 text-sm font-medium leading-relaxed italic">
+                <p className="text-muted text-sm font-medium leading-relaxed italic">
                   {analysis.insight || "Processing insights for your wellness..."}
                 </p>
               )}

@@ -63,21 +63,21 @@ const Companion = ({ currentEmotionData }) => {
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#050505] shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
           </div>
           <div>
-            <h2 className="text-lg font-black tracking-tight text-white">MindTrace Companion</h2>
+            <h2 className="text-lg font-black tracking-tight text-foreground">MindTrace Companion</h2>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black tracking-widest text-gray-500 uppercase">Current Mood:</span>
+              <span className="text-[10px] font-black tracking-widest text-muted uppercase">Current Mood:</span>
               <span className={`text-[10px] font-black tracking-widest uppercase ${
                 currentEmotionData?.emotion === 'Joy' ? 'text-emerald-400' : 
-                currentEmotionData?.emotion === 'Sadness' ? 'text-indigo-400' : 'text-gray-400'
+                currentEmotionData?.emotion === 'Sadness' ? 'text-indigo-400' : 'text-muted'
               }`}>
                 {currentEmotionData?.emotion || 'Calibrating...'}
               </span>
             </div>
           </div>
         </div>
-        <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
+        <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-glass rounded-xl border border-borderglass">
           <Brain className="w-4 h-4 text-indigo-400" />
-          <span className="text-[10px] font-black tracking-widest text-gray-400 uppercase">Empathetic Support: Active</span>
+          <span className="text-[10px] font-black tracking-widest text-muted uppercase">Empathetic Support: Active</span>
         </div>
       </div>
 
@@ -97,8 +97,8 @@ const Companion = ({ currentEmotionData }) => {
                 <div className={`space-y-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                   <div className={`p-4 rounded-[22px] text-sm leading-relaxed ${
                     msg.role === 'user' 
-                      ? 'bg-indigo-600 text-white shadow-lg' 
-                      : 'bg-white/5 border border-white/10 text-gray-200'
+                      ? 'bg-indigo-600 text-foreground shadow-lg' 
+                      : 'bg-glass border border-borderglass text-gray-200'
                   }`}>
                     {msg.content}
                   </div>
@@ -133,19 +133,19 @@ const Companion = ({ currentEmotionData }) => {
         </div>
 
         {/* Input Area */}
-        <div className="p-6 bg-[#0a0a0a] border-t border-white/5">
+        <div className="p-6 bg-[#0a0a0a] border-t border-borderglass">
           <form onSubmit={handleSend} className="relative">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Speak your truth..."
-              className="w-full bg-[#050505] border border-[#1a1a1a] rounded-2xl pl-6 pr-16 py-5 text-white placeholder:text-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all shadow-inner"
+              className="w-full bg-surface border border-[#1a1a1a] rounded-2xl pl-6 pr-16 py-5 text-foreground placeholder:text-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all shadow-inner"
             />
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white hover:bg-indigo-500 transition-all disabled:opacity-50 shadow-lg"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-foreground hover:bg-indigo-500 transition-all disabled:opacity-50 shadow-lg"
             >
               <Send className="w-5 h-5" />
             </button>

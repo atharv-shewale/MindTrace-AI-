@@ -59,7 +59,7 @@ const JournalHistory = () => {
       case 'joy': return <Smile className="w-4 h-4 text-emerald-500" />;
       case 'sadness': return <Frown className="w-4 h-4 text-indigo-500" />;
       case 'anger': return <AlertCircle className="w-4 h-4 text-red-500" />;
-      default: return <Meh className="w-4 h-4 text-gray-500" />;
+      default: return <Meh className="w-4 h-4 text-muted" />;
     }
   };
 
@@ -77,7 +77,7 @@ const JournalHistory = () => {
         </div>
         
         <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-indigo-500 transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted group-focus-within:text-indigo-500 transition-colors" />
           <input 
             type="text" 
             placeholder="Search patterns..."
@@ -101,15 +101,15 @@ const JournalHistory = () => {
               className="obsidian-card !p-6 flex items-center justify-between group cursor-pointer hover:bg-[#0f0f0f] transition-all border-[#111]"
             >
               <div className="flex items-center gap-6">
-                <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-indigo-500/10 transition-colors">
+                <div className="w-14 h-14 bg-glass rounded-2xl flex items-center justify-center group-hover:bg-indigo-500/10 transition-colors">
                   <BookOpen className="w-6 h-6 text-indigo-500" />
                 </div>
                 <div>
                   <div className="flex items-center gap-3 mb-1">
-                    <h3 className="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-indigo-400 transition-colors">
                       {entry.content.split('\n')[0].substring(0, 40)}...
                     </h3>
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 rounded-full border border-white/5">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-glass rounded-full border border-borderglass">
                       {getEmotionIcon(entry.dominant_emotion)}
                       <span className="text-[10px] font-black tracking-widest uppercase text-gray-400">
                         {entry.dominant_emotion || 'Analyzing'}
@@ -121,7 +121,7 @@ const JournalHistory = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-gray-500 text-xs font-medium">
+                  <div className="flex items-center gap-4 text-muted text-xs font-medium">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5" />
                       {new Date(entry.created_at.endsWith('Z') ? entry.created_at : entry.created_at + 'Z').toLocaleDateString(undefined, { 
@@ -143,22 +143,22 @@ const JournalHistory = () => {
               <div className="flex items-center gap-4">
                 <button 
                   onClick={(e) => handleDelete(e, entry._id)}
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-muted hover:text-red-500 hover:bg-red-500/10 transition-colors"
                   title="Delete Entry"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
-                <ChevronRight className="w-5 h-5 text-gray-700 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                <ChevronRight className="w-5 h-5 text-gray-700 group-hover:text-foreground group-hover:translate-x-1 transition-all" />
               </div>
             </div>
           ))}
           
           {filteredEntries.length === 0 && (
-            <div className="text-center py-20 bg-[#050505] border border-dashed border-[#1a1a1a] rounded-[32px]">
-              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="text-center py-20 bg-surface border border-dashed border-[#1a1a1a] rounded-[32px]">
+              <div className="w-16 h-16 bg-glass rounded-full flex items-center justify-center mx-auto mb-6">
                 <Brain className="w-8 h-8 text-gray-700" />
               </div>
-              <p className="text-gray-500 font-medium">No records found matching your search.</p>
+              <p className="text-muted font-medium">No records found matching your search.</p>
             </div>
           )}
         </div>
@@ -176,7 +176,7 @@ const JournalHistory = () => {
             <div className="p-8 border-b border-[#1a1a1a] flex items-center justify-between bg-gradient-to-r from-indigo-500/5 to-transparent">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                  <BookOpen className="w-6 h-6 text-white" />
+                  <BookOpen className="w-6 h-6 text-foreground" />
                 </div>
                 <div>
                   <h2 className="text-xl font-black tracking-tight">Journal Details</h2>
@@ -187,7 +187,7 @@ const JournalHistory = () => {
               </div>
               <button 
                 onClick={() => setSelectedEntry(null)}
-                className="w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-all"
+                className="w-10 h-10 bg-glass border border-borderglass rounded-full flex items-center justify-center text-gray-400 hover:text-foreground transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -204,7 +204,7 @@ const JournalHistory = () => {
               {/* Analysis Results */}
               <div className="mt-12 pt-8 border-t border-[#1a1a1a] grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h4 className="text-[10px] font-black tracking-widest text-gray-500 uppercase mb-4 flex items-center gap-2">
+                  <h4 className="text-[10px] font-black tracking-widest text-muted uppercase mb-4 flex items-center gap-2">
                     <TrendingUp className="w-3 h-3" />
                     Emotional Resonance
                   </h4>
@@ -213,7 +213,7 @@ const JournalHistory = () => {
                       <span className="text-xs font-bold capitalize">{selectedEntry.dominant_emotion}</span>
                       <span className="text-[10px] font-black text-indigo-500">{Math.round(selectedEntry.dominant_intensity * 100)}%</span>
                     </div>
-                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-glass rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-indigo-500 rounded-full"
                         style={{ width: `${selectedEntry.dominant_intensity * 100}%` }}
@@ -222,7 +222,7 @@ const JournalHistory = () => {
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-[10px] font-black tracking-widest text-gray-500 uppercase mb-4 flex items-center gap-2">
+                  <h4 className="text-[10px] font-black tracking-widest text-muted uppercase mb-4 flex items-center gap-2">
                     <Smile className="w-3 h-3" />
                     Positivity Index
                   </h4>
@@ -239,10 +239,10 @@ const JournalHistory = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-8 bg-[#050505] border-t border-[#1a1a1a] flex justify-end">
+            <div className="p-8 bg-surface border-t border-[#1a1a1a] flex justify-end">
               <button 
                 onClick={() => setSelectedEntry(null)}
-                className="px-8 py-3 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black tracking-widest uppercase text-white hover:bg-white/10 transition-all"
+                className="px-8 py-3 bg-glass border border-borderglass rounded-2xl text-[10px] font-black tracking-widest uppercase text-foreground hover:bg-glass brightness-110 transition-all"
               >
                 Dismiss Records
               </button>

@@ -124,7 +124,7 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
             <Brain className="w-6 h-6 text-indigo-500 animate-pulse" />
           </div>
         </div>
-        <p className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-500">Initializing System...</p>
+        <p className="text-[10px] font-black tracking-[0.3em] uppercase text-muted">Initializing System...</p>
       </div>
     );
   }
@@ -139,7 +139,7 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
             <span className="text-[10px] font-black tracking-widest text-emerald-500 uppercase">Live Monitoring: Active</span>
           </div>
           <h1 className="text-5xl font-black tracking-tight leading-none mb-2">My Overview</h1>
-          <p className="text-gray-500 text-sm font-medium">Track your emotional well-being and daily insights in real-time.</p>
+          <p className="text-muted text-sm font-medium">Track your emotional well-being and daily insights in real-time.</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -153,14 +153,14 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
           <button 
             onClick={() => setNotificationsEnabled(!notificationsEnabled)}
             className={`p-3 border rounded-2xl transition-all ${
-              notificationsEnabled ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-white/5 border-white/10 text-gray-500 hover:text-white'
+              notificationsEnabled ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-glass border-borderglass text-muted hover:text-foreground'
             }`}
           >
             <Bell className="w-5 h-5" />
           </button>
           <button 
             onClick={handleManualSync}
-            className="p-3 bg-white/5 border border-white/10 rounded-2xl text-gray-500 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            className="p-3 bg-glass border border-borderglass rounded-2xl text-muted hover:text-foreground hover:bg-glass brightness-110 transition-all active:scale-95"
           >
             <RefreshCw className={`w-5 h-5 ${syncing ? 'animate-spin text-indigo-500' : ''}`} />
           </button>
@@ -185,17 +185,17 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
             </div>
             
             <div className="space-y-1">
-              <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Mood State</p>
-              <h3 className="text-4xl font-black text-white tracking-tighter transition-all duration-500">{currentMood?.emotion || 'Calibrating'}</h3>
+              <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em]">Mood State</p>
+              <h3 className="text-4xl font-black text-foreground tracking-tighter transition-all duration-500">{currentMood?.emotion || 'Calibrating'}</h3>
             </div>
           </div>
 
           <div className="mt-10 space-y-4">
             <div className="flex justify-between items-end">
-              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Intensity</span>
-              <span className="text-xl font-black text-white tabular-nums">{Math.round((currentMood?.intensity || 0) * 100)}%</span>
+              <span className="text-[10px] font-black text-muted uppercase tracking-widest">Intensity</span>
+              <span className="text-xl font-black text-foreground tabular-nums">{Math.round((currentMood?.intensity || 0) * 100)}%</span>
             </div>
-            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-glass rounded-full overflow-hidden">
               <div 
                 className="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(99,102,241,0.5)]"
                 style={{ width: `${Math.max(5, (currentMood?.intensity || 0) * 100)}%` }}
@@ -208,7 +208,7 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
         </div>
 
         {/* AI Insight Synthesis - WIDE */}
-        <div className="lg:col-span-3 obsidian-card bg-[#050505] border-white/5 hover:border-white/10 transition-colors">
+        <div className="lg:col-span-3 obsidian-card bg-surface border-borderglass hover:border-borderglass transition-colors">
           <div className="flex flex-col md:flex-row h-full gap-8">
             <div className="flex-1 flex flex-col justify-between">
               <div>
@@ -218,12 +218,12 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
                   </div>
                   <span className="text-emerald-400 text-[10px] font-black tracking-widest uppercase">Daily Summary</span>
                 </div>
-                <h3 className="text-3xl font-bold mb-4 leading-tight text-white/90">
+                <h3 className="text-3xl font-bold mb-4 leading-tight text-foreground/90">
                   {stabilityIndex >= 70 
                     ? "Your emotional patterns show exceptional clarity today." 
                     : "Slight emotional turbulence detected. Consider a mindfulness exercise."}
                 </h3>
-                <p className="text-gray-500 text-lg leading-relaxed font-medium">
+                <p className="text-muted text-lg leading-relaxed font-medium">
                   {analytics?.insight || "We've analyzed your recent biometric data. You're showing high adaptability in your emotional core."}
                 </p>
               </div>
@@ -235,7 +235,7 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
                 >
                   Start Practice
                 </button>
-                <div className="flex items-center gap-2 text-gray-500">
+                <div className="flex items-center gap-2 text-muted">
                   <Clock className="w-4 h-4" />
                   <span className="text-[10px] font-black uppercase tracking-widest">Next Update: 22m</span>
                 </div>
@@ -243,9 +243,9 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
             </div>
 
             <div className="w-full md:w-64 flex flex-col gap-3">
-              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Live Protocols</p>
+              <p className="text-[10px] font-black text-muted uppercase tracking-widest mb-2">Live Protocols</p>
               {activeProtocols.map((p, i) => (
-                <div key={i} className="p-4 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between hover:bg-white/10 transition-all cursor-pointer">
+                <div key={i} className="p-4 bg-glass border border-borderglass rounded-2xl flex items-center justify-between hover:bg-glass brightness-110 transition-all cursor-pointer">
                   <span className="text-xs font-bold text-gray-300">{p}</span>
                   <ChevronRight className="w-4 h-4 text-gray-600" />
                 </div>
@@ -259,10 +259,10 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
           <div>
             <div className="flex items-center gap-2 mb-8">
               <Activity className="w-4 h-4 text-indigo-500" />
-              <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Mood Stability</span>
+              <span className="text-muted text-[10px] font-black tracking-widest uppercase">Mood Stability</span>
             </div>
             <div className="flex items-baseline gap-1">
-              <span className="text-7xl font-black tracking-tighter text-white">{stabilityIndex}</span>
+              <span className="text-7xl font-black tracking-tighter text-foreground">{stabilityIndex}</span>
               <span className="text-2xl text-gray-700 font-bold">%</span>
             </div>
           </div>
@@ -293,7 +293,7 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
         <div className="bento-card lg:col-span-1 min-h-[300px] flex flex-col">
           <div className="flex items-center gap-2 mb-4">
             <LayoutGrid className="w-4 h-4 text-purple-500" />
-            <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Emotion Breakdown</span>
+            <span className="text-muted text-[10px] font-black tracking-widest uppercase">Emotion Breakdown</span>
           </div>
           <div className="flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -317,18 +317,18 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
           <div>
             <div className="flex items-center gap-2 mb-8">
               <Heart className="w-4 h-4 text-emerald-500" />
-              <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Recommended for You</span>
+              <span className="text-muted text-[10px] font-black tracking-widest uppercase">Recommended for You</span>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-5 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/10 transition-all cursor-pointer group">
+              <div className="p-5 bg-glass border border-borderglass rounded-3xl hover:bg-glass brightness-110 transition-all cursor-pointer group">
                 <Smile className="w-6 h-6 text-indigo-400 mb-3 group-hover:scale-110 transition-transform" />
-                <p className="text-sm font-bold text-white mb-1">Joy Boost</p>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Protocol Delta</p>
+                <p className="text-sm font-bold text-foreground mb-1">Joy Boost</p>
+                <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Protocol Delta</p>
               </div>
-              <div className="p-5 bg-white/5 border border-white/5 rounded-3xl hover:bg-white/10 transition-all cursor-pointer group">
+              <div className="p-5 bg-glass border border-borderglass rounded-3xl hover:bg-glass brightness-110 transition-all cursor-pointer group">
                 <Zap className="w-6 h-6 text-amber-400 mb-3 group-hover:scale-110 transition-transform" />
-                <p className="text-sm font-bold text-white mb-1">Neural Reset</p>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Immediate Effect</p>
+                <p className="text-sm font-bold text-foreground mb-1">Neural Reset</p>
+                <p className="text-[10px] text-muted font-bold uppercase tracking-widest">Immediate Effect</p>
               </div>
             </div>
           </div>
@@ -349,42 +349,42 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {(!user?.interests || user?.interests?.includes('nature')) && (
-              <div className="p-6 bg-black/40 border border-white/5 rounded-3xl hover:border-emerald-500/30 transition-all cursor-pointer group">
+              <div className="p-6 bg-surface border border-borderglass rounded-3xl hover:border-emerald-500/30 transition-all cursor-pointer group">
                 <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
                   <Compass className="w-5 h-5 text-emerald-500" />
                 </div>
-                <h4 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400">Nature Walk</h4>
-                <p className="text-sm text-gray-500">Based on your love for the outdoors. A 20-min walk can reset your neural state.</p>
+                <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-emerald-400">Nature Walk</h4>
+                <p className="text-sm text-muted">Based on your love for the outdoors. A 20-min walk can reset your neural state.</p>
               </div>
             )}
             
             {(!user?.interests || user?.interests?.includes('music')) && (
-              <div className="p-6 bg-black/40 border border-white/5 rounded-3xl hover:border-indigo-500/30 transition-all cursor-pointer group">
+              <div className="p-6 bg-surface border border-borderglass rounded-3xl hover:border-indigo-500/30 transition-all cursor-pointer group">
                 <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-4">
                   <Music className="w-5 h-5 text-indigo-500" />
                 </div>
-                <h4 className="text-lg font-bold text-white mb-2 group-hover:text-indigo-400">Deep Listening</h4>
-                <p className="text-sm text-gray-500">Listen to a Lo-Fi ambient track to stabilize your focus index.</p>
+                <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-indigo-400">Deep Listening</h4>
+                <p className="text-sm text-muted">Listen to a Lo-Fi ambient track to stabilize your focus index.</p>
               </div>
             )}
 
             {(!user?.interests || user?.interests?.includes('reading')) && (
-              <div className="p-6 bg-black/40 border border-white/5 rounded-3xl hover:border-purple-500/30 transition-all cursor-pointer group">
+              <div className="p-6 bg-surface border border-borderglass rounded-3xl hover:border-purple-500/30 transition-all cursor-pointer group">
                 <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center mb-4">
                   <Coffee className="w-5 h-5 text-purple-500" />
                 </div>
-                <h4 className="text-lg font-bold text-white mb-2 group-hover:text-purple-400">Cafe Reading</h4>
-                <p className="text-sm text-gray-500">Spend 30 minutes reading at a local cafe to decompress.</p>
+                <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-purple-400">Cafe Reading</h4>
+                <p className="text-sm text-muted">Spend 30 minutes reading at a local cafe to decompress.</p>
               </div>
             )}
             
             {user?.interests?.length > 0 && !user?.interests?.includes('nature') && !user?.interests?.includes('music') && !user?.interests?.includes('reading') && (
-              <div className="p-6 bg-black/40 border border-white/5 rounded-3xl hover:border-amber-500/30 transition-all cursor-pointer group">
+              <div className="p-6 bg-surface border border-borderglass rounded-3xl hover:border-amber-500/30 transition-all cursor-pointer group">
                 <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center mb-4">
                   <Sparkles className="w-5 h-5 text-amber-500" />
                 </div>
-                <h4 className="text-lg font-bold text-white mb-2 group-hover:text-amber-400">Creative Flow</h4>
-                <p className="text-sm text-gray-500">Engage in your interest "{user.interests[0]}" to channel your current energy positively.</p>
+                <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-amber-400">Creative Flow</h4>
+                <p className="text-sm text-muted">Engage in your interest "{user.interests[0]}" to channel your current energy positively.</p>
               </div>
             )}
           </div>
@@ -392,7 +392,7 @@ const Dashboard = ({ user, onNavigate, currentMood }) => {
       </div>
 
       {/* BOTTOM SECTION */}
-      <div className="pt-10 border-t border-white/5">
+      <div className="pt-10 border-t border-borderglass">
         <CalendarInsights history={analytics?.history} />
       </div>
     </div>

@@ -18,7 +18,7 @@ const CalendarInsights = ({ history = [] }) => {
 
   // Padding for first week
   for (let i = 0; i < startDay; i++) {
-    days.push(<div key={`pad-${i}`} className="h-20 border border-white/5 opacity-0"></div>);
+    days.push(<div key={`pad-${i}`} className="h-20 border border-borderglass opacity-0"></div>);
   }
 
   // Map history to a lookup object by day
@@ -71,14 +71,14 @@ const CalendarInsights = ({ history = [] }) => {
       <div 
         key={d} 
         onClick={() => !isFuture && setSelectedDate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d))}
-        className={`h-20 border border-white/5 p-2 transition-all group relative ${
-          isFuture ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:bg-white/10'
+        className={`h-20 border border-borderglass p-2 transition-all group relative ${
+          isFuture ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:bg-glass brightness-110'
         } ${
           isSelected && !isFuture ? 'ring-1 ring-indigo-500 z-10 scale-[1.02] bg-indigo-500/20' : ''
         } ${dayData && !isFuture ? 'bg-indigo-500/10' : ''}`}
       >
         <div className="flex justify-between items-start">
-          <span className={`text-[10px] font-black tracking-widest ${isToday ? 'text-indigo-400' : 'text-gray-500'}`}>
+          <span className={`text-[10px] font-black tracking-widest ${isToday ? 'text-indigo-400' : 'text-muted'}`}>
             {d < 10 ? `0${d}` : d}
           </span>
           {emotion && getEmotionIcon(emotion)}
@@ -91,7 +91,7 @@ const CalendarInsights = ({ history = [] }) => {
         {emotion && (
           <div className="mt-2">
             <p className="text-[8px] font-black tracking-widest uppercase text-gray-400 truncate">{emotion}</p>
-            <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden mt-1">
+            <div className="w-full h-1 bg-glass rounded-full overflow-hidden mt-1">
               <div 
                 className={`h-full ${dayData?.score > 70 ? 'bg-emerald-500' : 'bg-indigo-500'}`} 
                 style={{ width: `${dayData?.score || 50}%` }}
@@ -108,21 +108,21 @@ const CalendarInsights = ({ history = [] }) => {
       <div className="flex items-center justify-between px-2">
         <div>
           <h2 className="text-xl font-bold tracking-tight">Wellness History</h2>
-          <p className="text-[10px] font-black tracking-widest text-gray-500 uppercase mt-1">Cross-Spectral Emotional Logs</p>
+          <p className="text-[10px] font-black tracking-widest text-muted uppercase mt-1">Cross-Spectral Emotional Logs</p>
         </div>
-        <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-1">
+        <div className="flex items-center gap-4 bg-glass border border-borderglass rounded-2xl p-1">
           <button 
             onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))}
-            className="p-2 text-gray-500 hover:text-white transition-colors"
+            className="p-2 text-muted hover:text-foreground transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <span className="text-[10px] font-black tracking-widest uppercase text-white min-w-[100px] text-center">
+          <span className="text-[10px] font-black tracking-widest uppercase text-foreground min-w-[100px] text-center">
             {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
           </span>
           <button 
             onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))}
-            className="p-2 text-gray-500 hover:text-white transition-colors"
+            className="p-2 text-muted hover:text-foreground transition-colors"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -130,10 +130,10 @@ const CalendarInsights = ({ history = [] }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-3 obsidian-card !p-0 overflow-hidden border-white/10">
-          <div className="grid grid-cols-7 border-b border-white/10 bg-white/5">
+        <div className="lg:col-span-3 obsidian-card !p-0 overflow-hidden border-borderglass">
+          <div className="grid grid-cols-7 border-b border-borderglass bg-glass">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="py-3 text-center text-[10px] font-black tracking-widest text-gray-500 uppercase">
+              <div key={day} className="py-3 text-center text-[10px] font-black tracking-widest text-muted uppercase">
                 {day}
               </div>
             ))}
@@ -150,13 +150,13 @@ const CalendarInsights = ({ history = [] }) => {
               <span className="text-indigo-400 text-[10px] font-black tracking-widest uppercase">Daily Peak</span>
             </div>
             <h3 className="text-2xl font-black mb-1">Stability High</h3>
-            <p className="text-gray-500 text-xs font-bold tracking-widest uppercase">Detected at 14:32</p>
+            <p className="text-muted text-xs font-bold tracking-widest uppercase">Detected at 14:32</p>
           </div>
 
           <div className="bento-card">
             <div className="flex items-center gap-2 mb-4">
               <Brain className="w-4 h-4 text-amber-400" />
-              <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Neural Insight</span>
+              <span className="text-muted text-[10px] font-black tracking-widest uppercase">Neural Insight</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed font-medium">
               Your evening patterns suggest a 20% increase in restorative capacity when journaling before 10 PM.

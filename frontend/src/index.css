@@ -5,23 +5,41 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-main: #fdfbf7;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --bg-card: #ffffff;
+    --border-main: #e2e8f0;
+    --bg-glass: rgba(0, 0, 0, 0.03);
+  }
+  
+  .dark {
+    --bg-main: #000000;
+    --text-main: #ffffff;
+    --text-muted: #9ca3af;
+    --bg-card: #0a0a0a;
+    --border-main: #1a1a1a;
+    --bg-glass: rgba(255, 255, 255, 0.05);
+  }
+
   body {
-    @apply bg-[#000000] text-white overflow-x-hidden;
+    @apply bg-background text-foreground overflow-x-hidden transition-colors duration-500;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
 @layer components {
   .obsidian-card {
-    @apply bg-[#0a0a0a] border border-[#1a1a1a] rounded-[32px] p-8 relative overflow-hidden transition-all duration-500 hover:border-[#333] hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)];
+    @apply bg-surface border border-borderglass rounded-[32px] p-8 relative overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)];
   }
   
   .glass-surface {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+    @apply bg-glass backdrop-blur-xl border border-borderglass;
   }
   
   .bento-card {
-    @apply bg-[#0a0a0a] border border-[#1a1a1a] rounded-[24px] p-6 transition-all duration-500 hover:border-[#333] hover:bg-[#0f0f0f];
+    @apply bg-surface border border-borderglass rounded-[24px] p-6 transition-all duration-500;
   }
   
   .neural-gradient {

@@ -115,7 +115,7 @@ const Settings = ({ user, onLogout }) => {
     <div className="max-w-4xl mx-auto space-y-8 pb-20">
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-gray-400 text-sm font-bold tracking-widest uppercase mb-1">Configuration</h2>
+          <h2 className="text-muted text-sm font-bold tracking-widest uppercase mb-1">Configuration</h2>
           <h1 className="text-4xl font-black tracking-tight">System Preferences</h1>
         </div>
         <div className="flex items-center gap-4">
@@ -135,7 +135,7 @@ const Settings = ({ user, onLogout }) => {
         <button
           onClick={() => setActiveTab('profile')}
           className={`px-6 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all ${
-            activeTab === 'profile' ? 'bg-white/5 text-white shadow-inner' : 'text-gray-500 hover:text-gray-300'
+            activeTab === 'profile' ? 'bg-glass text-foreground shadow-inner' : 'text-muted hover:text-gray-300'
           }`}
         >
           Identity
@@ -143,7 +143,7 @@ const Settings = ({ user, onLogout }) => {
         <button
           onClick={() => setActiveTab('privacy')}
           className={`px-6 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all ${
-            activeTab === 'privacy' ? 'bg-white/5 text-white shadow-inner' : 'text-gray-500 hover:text-gray-300'
+            activeTab === 'privacy' ? 'bg-glass text-foreground shadow-inner' : 'text-muted hover:text-gray-300'
           }`}
         >
           Privacy & Security
@@ -151,7 +151,7 @@ const Settings = ({ user, onLogout }) => {
         <button
           onClick={() => setActiveTab('emergency')}
           className={`px-6 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all ${
-            activeTab === 'emergency' ? 'bg-white/5 text-white shadow-inner' : 'text-gray-500 hover:text-gray-300'
+            activeTab === 'emergency' ? 'bg-glass text-foreground shadow-inner' : 'text-muted hover:text-gray-300'
           }`}
         >
           Safety Net
@@ -173,7 +173,7 @@ const Settings = ({ user, onLogout }) => {
                   type="text"
                   value={profile.full_name || profile.name || ''}
                   onChange={(e) => { setProfile({ ...profile, full_name: e.target.value }); setFormChanged(true); }}
-                  className="w-full bg-[#050505] border border-[#1a1a1a] rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 transition-all outline-none"
+                  className="w-full bg-surface border border-[#1a1a1a] rounded-2xl px-5 py-4 text-foreground focus:border-indigo-500/50 transition-all outline-none"
                 />
               </div>
               <div className="space-y-2">
@@ -182,7 +182,7 @@ const Settings = ({ user, onLogout }) => {
                   type="number"
                   value={profile.age || ''}
                   onChange={(e) => { setProfile({ ...profile, age: parseInt(e.target.value) }); setFormChanged(true); }}
-                  className="w-full bg-[#050505] border border-[#1a1a1a] rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 transition-all outline-none"
+                  className="w-full bg-surface border border-[#1a1a1a] rounded-2xl px-5 py-4 text-foreground focus:border-indigo-500/50 transition-all outline-none"
                 />
               </div>
               <div className="space-y-2">
@@ -190,7 +190,7 @@ const Settings = ({ user, onLogout }) => {
                 <select
                   value={profile.timezone || 'UTC'}
                   onChange={(e) => { setProfile({ ...profile, timezone: e.target.value }); setFormChanged(true); }}
-                  className="w-full bg-[#050505] border border-[#1a1a1a] rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 transition-all appearance-none outline-none"
+                  className="w-full bg-surface border border-[#1a1a1a] rounded-2xl px-5 py-4 text-foreground focus:border-indigo-500/50 transition-all appearance-none outline-none"
                 >
                   <option value="UTC">UTC (Universal)</option>
                   <option value="IST">IST (+5:30)</option>
@@ -204,7 +204,7 @@ const Settings = ({ user, onLogout }) => {
                   type="text"
                   value={profile.occupation || ''}
                   onChange={(e) => { setProfile({ ...profile, occupation: e.target.value }); setFormChanged(true); }}
-                  className="w-full bg-[#050505] border border-[#1a1a1a] rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 transition-all outline-none"
+                  className="w-full bg-surface border border-[#1a1a1a] rounded-2xl px-5 py-4 text-foreground focus:border-indigo-500/50 transition-all outline-none"
                 />
               </div>
             </div>
@@ -213,7 +213,7 @@ const Settings = ({ user, onLogout }) => {
               <button
                 onClick={handleProfileUpdate}
                 disabled={!formChanged || loading}
-                className="px-8 py-3 bg-indigo-600 rounded-2xl text-[10px] font-black tracking-widest uppercase text-white shadow-[0_10px_20px_rgba(99,102,241,0.3)] hover:bg-indigo-500 transition-all disabled:opacity-50"
+                className="px-8 py-3 bg-indigo-600 rounded-2xl text-[10px] font-black tracking-widest uppercase text-foreground shadow-[0_10px_20px_rgba(99,102,241,0.3)] hover:bg-indigo-500 transition-all disabled:opacity-50"
               >
                 {loading ? 'Syncing...' : 'Update Profile'}
               </button>
@@ -228,7 +228,7 @@ const Settings = ({ user, onLogout }) => {
             <div className="bento-card">
               <div className="flex items-center gap-2 mb-4">
                 <Brain className="w-4 h-4 text-indigo-500" />
-                <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Intelligent Tracking</span>
+                <span className="text-muted text-[10px] font-black tracking-widest uppercase">Intelligent Tracking</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -247,7 +247,7 @@ const Settings = ({ user, onLogout }) => {
             <div className="bento-card">
               <div className="flex items-center gap-2 mb-4">
                 <Globe className="w-4 h-4 text-emerald-500" />
-                <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase">Visibility</span>
+                <span className="text-muted text-[10px] font-black tracking-widest uppercase">Visibility</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -270,8 +270,8 @@ const Settings = ({ user, onLogout }) => {
                     <Shield className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-white">Enhanced Privacy Mode</h4>
-                    <p className="text-[10px] text-gray-500 font-black tracking-widest uppercase">Blur camera feed and process locally only</p>
+                    <h4 className="text-sm font-bold text-foreground">Enhanced Privacy Mode</h4>
+                    <p className="text-[10px] text-muted font-black tracking-widest uppercase">Blur camera feed and process locally only</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
@@ -297,7 +297,7 @@ const Settings = ({ user, onLogout }) => {
                   <select 
                     value={profile.report_frequency || 'daily'}
                     onChange={(e) => handleToggleSetting('report_frequency', e.target.value)}
-                    className="bg-[#050505] border border-[#1a1a1a] rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest text-indigo-400 focus:outline-none cursor-pointer"
+                    className="bg-surface border border-[#1a1a1a] rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest text-indigo-400 focus:outline-none cursor-pointer"
                   >
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
@@ -329,20 +329,20 @@ const Settings = ({ user, onLogout }) => {
                 placeholder="Contact Name"
                 value={newContact.name}
                 onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
-                className="bg-[#050505] border border-[#1a1a1a] rounded-2xl px-5 py-4 text-white focus:border-red-500/50 transition-all text-sm outline-none"
+                className="bg-surface border border-[#1a1a1a] rounded-2xl px-5 py-4 text-foreground focus:border-red-500/50 transition-all text-sm outline-none"
               />
               <input
                 type="tel"
                 placeholder="Phone Number"
                 value={newContact.phone}
                 onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
-                className="bg-[#050505] border border-[#1a1a1a] rounded-2xl px-5 py-4 text-white focus:border-red-500/50 transition-all text-sm outline-none"
+                className="bg-surface border border-[#1a1a1a] rounded-2xl px-5 py-4 text-foreground focus:border-red-500/50 transition-all text-sm outline-none"
               />
             </div>
             
             <button
               onClick={handleAddContact}
-              className="w-full py-4 bg-red-600 text-white rounded-2xl text-[10px] font-black tracking-widest uppercase hover:bg-red-500 transition-all shadow-lg shadow-red-600/20"
+              className="w-full py-4 bg-red-600 text-foreground rounded-2xl text-[10px] font-black tracking-widest uppercase hover:bg-red-500 transition-all shadow-lg shadow-red-600/20"
             >
               Secure Contact
             </button>
@@ -352,11 +352,11 @@ const Settings = ({ user, onLogout }) => {
             {sosContacts.map((contact) => (
               <div key={contact.id} className="bento-card flex items-center justify-between group hover:border-red-500/30 transition-all">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-500 group-hover:text-red-500 transition-colors">
+                  <div className="w-12 h-12 bg-glass rounded-2xl flex items-center justify-center text-muted group-hover:text-red-500 transition-colors">
                     <User className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-white">{contact.name}</h4>
+                    <h4 className="font-bold text-foreground">{contact.name}</h4>
                     <p className="text-[10px] font-black tracking-widest text-gray-600 uppercase">{contact.phone}</p>
                   </div>
                 </div>

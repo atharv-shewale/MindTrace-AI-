@@ -71,7 +71,7 @@ const Login = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#000000] flex items-center justify-center p-6 selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6 selection:bg-indigo-500/30">
       {/* Background Orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[120px] animate-pulse"></div>
@@ -82,22 +82,22 @@ const Login = ({ onLoginSuccess }) => {
         {/* Header */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-[22px] shadow-[0_0_30px_rgba(99,102,241,0.4)] mb-6 group transition-transform duration-500 hover:rotate-12">
-            <Brain className="w-8 h-8 text-white" />
+            <Brain className="w-8 h-8 text-foreground" />
           </div>
-          <h1 className="text-4xl font-black tracking-tighter text-white mb-2">
+          <h1 className="text-4xl font-black tracking-tighter text-foreground mb-2">
             MINDTRACE<span className="text-indigo-500">AI+</span>
           </h1>
-          <p className="text-gray-500 font-medium tracking-wide">Secure Personal Insights</p>
+          <p className="text-muted font-medium tracking-wide">Secure Personal Insights</p>
         </div>
 
         {/* Main Card */}
         <div className="obsidian-card !p-0">
           {/* Mode Switcher */}
-          <div className="flex p-1 bg-white/5 border-b border-white/5">
+          <div className="flex p-1 bg-glass border-b border-borderglass">
             <button
               onClick={() => setMode('login')}
               className={`flex-1 py-4 text-xs font-black tracking-[0.2em] uppercase transition-all rounded-t-[28px] ${
-                mode === 'login' ? 'text-white bg-white/5' : 'text-gray-500 hover:text-gray-300'
+                mode === 'login' ? 'text-foreground bg-glass' : 'text-muted hover:text-gray-300'
               }`}
             >
               Login
@@ -105,7 +105,7 @@ const Login = ({ onLoginSuccess }) => {
             <button
               onClick={() => setMode('signup')}
               className={`flex-1 py-4 text-xs font-black tracking-[0.2em] uppercase transition-all rounded-t-[28px] ${
-                mode === 'signup' ? 'text-white bg-white/5' : 'text-gray-500 hover:text-gray-300'
+                mode === 'signup' ? 'text-foreground bg-glass' : 'text-muted hover:text-gray-300'
               }`}
             >
               Sign Up
@@ -115,7 +115,7 @@ const Login = ({ onLoginSuccess }) => {
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
             {mode === 'signup' && (
               <div className="space-y-2">
-                <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Full Name</label>
+                <label className="text-[10px] font-black tracking-widest text-muted uppercase ml-1">Full Name</label>
                 <div className="relative">
                   <input
                     type="text"
@@ -123,26 +123,26 @@ const Login = ({ onLoginSuccess }) => {
                     value={formData.fullName}
                     onChange={handleChange}
                     placeholder="Enter your name"
-                    className="w-full bg-[#111] border border-[#222] rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all"
+                    className="w-full bg-[#111] border border-[#222] rounded-2xl px-5 py-4 text-foreground placeholder:text-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all"
                   />
                 </div>
               </div>
             )}
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Email Address</label>
+              <label className="text-[10px] font-black tracking-widest text-muted uppercase ml-1">Email Address</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="email@example.com"
-                className="w-full bg-[#111] border border-[#222] rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all"
+                className="w-full bg-[#111] border border-[#222] rounded-2xl px-5 py-4 text-foreground placeholder:text-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Password</label>
+              <label className="text-[10px] font-black tracking-widest text-muted uppercase ml-1">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -150,12 +150,12 @@ const Login = ({ onLoginSuccess }) => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full bg-[#111] border border-[#222] rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all"
+                  className="w-full bg-[#111] border border-[#222] rounded-2xl px-5 py-4 text-foreground placeholder:text-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-400"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-muted"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -164,14 +164,14 @@ const Login = ({ onLoginSuccess }) => {
 
             {mode === 'signup' && (
               <div className="space-y-2">
-                <label className="text-[10px] font-black tracking-widest text-gray-500 uppercase ml-1">Confirm Password</label>
+                <label className="text-[10px] font-black tracking-widest text-muted uppercase ml-1">Confirm Password</label>
                 <input
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full bg-[#111] border border-[#222] rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all"
+                  className="w-full bg-[#111] border border-[#222] rounded-2xl px-5 py-4 text-foreground placeholder:text-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all"
                 />
               </div>
             )}
@@ -186,7 +186,7 @@ const Login = ({ onLoginSuccess }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full group relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 text-white font-black tracking-widest uppercase text-xs py-5 rounded-2xl shadow-[0_10px_20px_rgba(99,102,241,0.3)] transition-all active:scale-[0.98] disabled:opacity-50"
+              className="w-full group relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 text-foreground font-black tracking-widest uppercase text-xs py-5 rounded-2xl shadow-[0_10px_20px_rgba(99,102,241,0.3)] transition-all active:scale-[0.98] disabled:opacity-50"
             >
               <div className="flex items-center justify-center gap-3">
                 {loading ? (
@@ -213,7 +213,7 @@ const Login = ({ onLoginSuccess }) => {
         {/* System Credentials Hint */}
         <div className="mt-8 text-center">
           <p className="text-gray-700 text-[10px] font-bold tracking-widest uppercase">
-            Test Access: <span className="text-gray-500">demo@mindtrace.com</span> / <span className="text-gray-500">DemoPass123!</span>
+            Test Access: <span className="text-muted">demo@mindtrace.com</span> / <span className="text-muted">DemoPass123!</span>
           </p>
         </div>
       </div>
