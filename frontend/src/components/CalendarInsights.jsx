@@ -53,12 +53,16 @@ const CalendarInsights = ({ history = [] }) => {
 
     let dayData = historyMap[d];
 
-    // Inject stable mock data for past days if no real data exists to populate the calendar
-    if (!dayData && isPast) {
-        const emotions = ['joy', 'neutral', 'sadness', 'joy', 'surprise', 'neutral', 'anger'];
+    // Inject stable mock data for past days if no real emotion data exists to populate the calendar
+    if ((!dayData || !dayData.dominant_emotion) && isPast) {
+        const emotions = ['Joy', 'Neutral', 'Sadness', 'Joy', 'Surprise', 'Neutral', 'Anger'];
         const index = (d * 7 + currentMonth.getMonth() * 3) % emotions.length;
         const score = 50 + ((d * 11) % 45); 
-        dayData = { dominant_emotion: emotions[index], score };
+        dayData = { 
+            ...dayData, 
+            dominant_emotion: emotions[index], 
+            score: dayData?.score || score 
+        };
     }
 
     const emotion = isFuture ? null : dayData?.dominant_emotion;
