@@ -22,6 +22,7 @@ async def lifespan(app: FastAPI):
     try:
         await connect_to_mongo()
         await emotion_engine.initialize()
+        logger.info(f"[OK] CORS Allowed Origins: {settings.CORS_ORIGINS}")
         logger.info("[OK] All services initialized")
     except Exception as e:
         logger.error(f"Startup failure: {e}")
@@ -38,13 +39,26 @@ app = FastAPI(
 )
 
 # CORS middleware
+origins = [str(origin) for origin in settings.CORS_ORIGINS]
+allow_all = "*" in origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=[] if allow_all else origins,
+    allow_origin_regex=".*" if allow_all else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def log_requests(request, call_next):
+    logger.info(f"Request: {request.method} {request.url.path}")
+    return await call_next(request)
+
+@app.options("/{path:path}")
+async def options_handler(path: str):
+    return {"message": "ok"}
 
 @app.get("/")
 async def root():

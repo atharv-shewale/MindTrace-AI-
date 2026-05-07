@@ -33,26 +33,27 @@ class Settings(BaseSettings):
     CRITICAL_THRESHOLD: float = 0.85
     WINDOW_SIZE: int = 3600  # 1 hour in seconds
     
-    # CORS Origins - Use string default to prevent auto-JSON-parsing by pydantic-settings
-    CORS_ORIGINS: Any = "https://mindtrace-frontend.netlify.app,http://localhost:3000,http://localhost:5173"
+    # CORS Origins - Whitelist for Netlify and Local
+    CORS_ORIGINS: List[str] = ["https://mindtrace-frontend.netlify.app", "https://mindtrace-ai.netlify.app", "http://localhost:3000"]
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Any) -> List[str]:
         if isinstance(v, str):
+            # Handle JSON list format
             if v.startswith("[") and v.endswith("]"):
-                import json
                 try:
+                    import json
                     parsed = json.loads(v)
                     if isinstance(parsed, list):
-                        return [str(i).strip().rstrip('/') for i in parsed]
+                        return [str(i).strip().rstrip('/') for i in parsed if i]
                 except Exception:
                     pass
-            # Handle comma-separated string
+            # Handle comma-separated string format
             return [i.strip().rstrip('/') for i in v.split(",") if i.strip()]
         elif isinstance(v, list):
-            return [str(i).strip().rstrip('/') for i in v]
-        return v
+            return [str(i).strip().rstrip('/') for i in v if i]
+        return v if v else []
 
     HUGGINGFACE_TOKEN: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None

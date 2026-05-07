@@ -1,6 +1,6 @@
 import logging
 from typing import List
-from groq import Groq
+from groq import AsyncGroq
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ class GroqService:
         self.api_key = settings.GROQ_API_KEY
         self.client = None
         if self.api_key:
-            self.client = Groq(api_key=self.api_key)
+            self.client = AsyncGroq(api_key=self.api_key)
         else:
             logger.warning("GROQ_API_KEY not found. GroqService will be limited.")
 
@@ -21,7 +21,7 @@ class GroqService:
         
         try:
             prompt = f"Generate a short, impressive, and futuristic wellness quote related to {context} for a mind tracking app called MindTrace AI+. Keep it under 20 words."
-            chat_completion = self.client.chat.completions.create(
+            chat_completion = await self.client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
                 model="llama-3.3-70b-versatile",
                 max_tokens=50,
@@ -43,7 +43,7 @@ class GroqService:
                 "Provide 3 personalized, actionable, and futuristic wellness suggestions for the MindTrace AI+ user. "
                 "Return them as a simple list separated by newlines, no numbers."
             )
-            chat_completion = self.client.chat.completions.create(
+            chat_completion = await self.client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
                 model="llama-3.3-70b-versatile",
                 max_tokens=150,
@@ -83,7 +83,7 @@ class GroqService:
                 "Only return the JSON list."
             )
             
-            chat_completion = self.client.chat.completions.create(
+            chat_completion = await self.client.chat.completions.create(
                 messages=[{"role": "system", "content": "You are an advanced AI wellness coach for MindTrace AI+."},
                           {"role": "user", "content": prompt}],
                 model="llama-3.3-70b-versatile",
@@ -124,7 +124,7 @@ class GroqService:
                 "Identify the dominant emotion, the intensity (0-1), and provide 3 highly personalized wellness suggestions. "
                 "Format as JSON: {\"dominant_emotion\": \"...\", \"intensity\": 0.0, \"suggestions\": [\"...\", \"...\", \"...\"]}"
             )
-            chat_completion = self.client.chat.completions.create(
+            chat_completion = await self.client.chat.completions.create(
                 messages=[{"role": "system", "content": "You are an expert psychological analyzer for MindTrace AI+."},
                           {"role": "user", "content": prompt}],
                 model="llama-3.3-70b-versatile",
@@ -142,7 +142,7 @@ class GroqService:
             return "I am processing your thoughts, but I need a moment to connect."
             
         try:
-            chat_completion = self.client.chat.completions.create(
+            chat_completion = await self.client.chat.completions.create(
                 messages=[
                     {"role": "system", "content": system_message},
                     {"role": "user", "content": user_message}

@@ -62,7 +62,9 @@ const Login = ({ onLoginSuccess }) => {
         onLoginSuccess?.(user, access_token);
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Authentication connection failed. Please check your internet connection.');
+      console.error('Login error:', err);
+      const errorMessage = err.response?.data?.detail || err.message || 'Authentication connection failed. Please check your internet connection.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

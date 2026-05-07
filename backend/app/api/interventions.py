@@ -6,6 +6,7 @@ from app.core.database import get_database
 from app.services.emotional_tracking import emotional_tracking_engine
 from app.services.intervention_engine import intervention_engine
 from app.websocket.manager import manager
+from bson import ObjectId
 import logging
 
 from app.services.groq_service import groq_service
@@ -25,7 +26,7 @@ async def get_recommended_interventions(
     db = get_database()
     
     # Get user onboarding data
-    user = await db.users.find_one({"_id": user_id})
+    user = await db.users.find_one({"_id": ObjectId(user_id)})
     user_data = {
         "interests": user.get("interests", []),
         "age": user.get("age"),

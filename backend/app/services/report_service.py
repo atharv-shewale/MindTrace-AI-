@@ -85,7 +85,8 @@ class ReportService:
     async def _send_report_email(self, user_id: str, report: Dict):
         """Simulate sending an email report"""
         db = get_database()
-        user = await db.users.find_one({"_id": user_id}) if isinstance(user_id, str) else None
+        from bson import ObjectId
+        user = await db.users.find_one({"_id": ObjectId(user_id)}) if isinstance(user_id, str) else None
         
         if not user:
             user = await db.users.find_one({"_id": user_id})

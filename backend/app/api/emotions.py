@@ -109,10 +109,10 @@ async def detect_face_emotion(
         escalation_pattern = emotional_tracking_engine.detect_escalation_patterns(user_id)
         if escalation_pattern["is_escalating"]:
             # Get AI interventions from engine
-            from app.services.intervention_engine import adaptive_intervention_engine
-            interventions = adaptive_intervention_engine.get_interventions_for_emotion(
-                analysis["dominant_emotion"], 
-                escalation_pattern["escalation_score"]
+            from app.services.intervention_engine import intervention_engine
+            interventions = intervention_engine.recommend_interventions(
+                escalation_pattern=escalation_pattern,
+                user_safe_links=[] # Can be fetched from DB if needed
             )
             
             await manager.broadcast_escalation_alert(

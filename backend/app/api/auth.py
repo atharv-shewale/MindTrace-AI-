@@ -95,8 +95,21 @@ async def signup(user_data: AuthSignupRequest):
 async def login(credentials: AuthLoginRequest):
     """Login user"""
     db = get_database()
+    if not db:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection is not available. Please check your internet connection or database configuration."
+        )
     
-    user = await db.users.find_one({"email": credentials.email})
+    try:
+        user = await db.users.find_one({"email": credentials.email})
+    except Exception as e:
+        logger.error(f"Database query failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database query failed. System may be overloaded."
+        )
+
     if not user or not verify_password(credentials.password, user["hashed_password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -13,9 +13,9 @@ class HuggingFaceService:
     API_URL = "https://api-inference.huggingface.co/models/j-hartmann/emotion-english-distilroberta-base"
     
     def __init__(self):
-        self.api_key = settings.HUGGINGFACE_API_KEY if hasattr(settings, 'HUGGINGFACE_API_KEY') else None
+        self.api_key = settings.HUGGINGFACE_TOKEN
         if not self.api_key:
-            logger.warning("HUGGINGFACE_API_KEY not found. HuggingFaceService will be limited.")
+            logger.warning("HUGGINGFACE_TOKEN not found. HuggingFaceService will be limited.")
 
     async def analyze_emotions(self, text: str) -> dict:
         """

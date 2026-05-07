@@ -30,3 +30,5 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://mindtrace-backend.onrender.com # Change this if your service name differs
+      - key: VITE_WS_URL
+        value: wss://mindtrace-backend.onrender.com # Change this if your service name differs
