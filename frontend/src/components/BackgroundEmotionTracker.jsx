@@ -119,29 +119,37 @@ const BackgroundEmotionTracker = ({ enabled }) => {
     const cornersY = (mouthLeft.y + mouthRight.y) / 2;
     const mouthDrop = (cornersY - mouthCenter.y) / faceWidth;
 
-    // Heuristic Logic for Emotions (ULTRA SENSITIVE)
-    let dominant = 'neutral';
-    let intensity = 0.2;
+    // 5. Brow Furrow (Anger/Frustration) - Normalized distance between eyebrows
+    const leftInnerBrow = landmarks[52];
+    const rightInnerBrow = landmarks[282];
+    const browDistance = Math.sqrt(Math.pow(rightInnerBrow.x - leftInnerBrow.x, 2) + Math.pow(rightInnerBrow.y - leftInnerBrow.y, 2)) / faceWidth;
 
     // LOGGING FOR CALIBRATION
-    console.log(`[Tracking] Ratios -> Smile: ${smileRatio.toFixed(3)}, Mouth: ${mouthRatio.toFixed(3)}, Brows: ${eyebrowRatio.toFixed(3)}, Drop: ${mouthDrop.toFixed(3)}`);
+    console.log(`[Tracking] Ratios -> Smile: ${smileRatio.toFixed(3)}, Mouth: ${mouthRatio.toFixed(3)}, Brows: ${eyebrowRatio.toFixed(3)}, Drop: ${mouthDrop.toFixed(3)}, BrowDist: ${browDistance.toFixed(3)}`);
 
-    // Extremely loose thresholds to ensure movement
-    if (smileRatio > 0.38) {
-      dominant = 'joy';
-      intensity = Math.min(1.0, (smileRatio - 0.35) * 10);
-    } else if (mouthRatio > 0.08) {
-      dominant = 'surprise';
-      intensity = Math.min(1.0, mouthRatio * 8);
-    } else if (mouthDrop > 0.002) {
-      dominant = 'sadness';
-      intensity = 0.6;
-    } else if (eyebrowRatio < 0.22) {
-      dominant = 'anger';
-      intensity = 0.8;
-    } else if (eyebrowRatio > 0.25) {
-      dominant = 'fear';
-      intensity = 0.7;
+    // Heuristic Logic for Emotions (REFINED NEURAL MAPPING)
+    let dominant = 'Neutral';
+    let intensity = 0.2;
+
+    // 1. ANGER / FRUSTRATION (Prioritize furrowed brows and narrow distance)
+    if (eyebrowRatio < 0.21 || browDistance < 0.12) {
+      dominant = 'Anger';
+      intensity = Math.min(1.0, (0.22 - eyebrowRatio) * 15 + (0.13 - browDistance) * 5);
+    } 
+    // 2. SURPRISE / FEAR (Raised brows, open mouth)
+    else if (mouthRatio > 0.12 || eyebrowRatio > 0.26) {
+      dominant = mouthRatio > 0.15 ? 'Surprise' : 'Fear';
+      intensity = Math.min(1.0, mouthRatio * 5 + (eyebrowRatio - 0.25) * 10);
+    }
+    // 3. JOY (Wide mouth, relaxed brows)
+    else if (smileRatio > 0.39) {
+      dominant = 'Joy';
+      intensity = Math.min(1.0, (smileRatio - 0.38) * 12);
+    }
+    // 4. SADNESS (Mouth corners down)
+    else if (mouthDrop > 0.003) {
+      dominant = 'Sadness';
+      intensity = Math.min(1.0, mouthDrop * 50);
     }
 
     processingRef.current = true;
