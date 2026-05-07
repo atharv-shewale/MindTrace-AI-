@@ -36,15 +36,26 @@ class VideoService:
         filtered = self._data[self._data['emotion'] == search_emotion]
         
         if filtered.empty:
-            # Fallback mapping for emotions not explicitly in CSV
+            # Comprehensive fallback mapping to align with mindtrace_emotional_support_dataset.csv
             mapping = {
-                "joy": "burnout", # Just to get something positive/calm
-                "happiness": "burnout",
-                "neutral": "stress",
+                # Positive / Neutral
+                "joy": "joy",
+                "happiness": "joy",
+                "calm": "joy",
+                "relief": "joy",
+                "motivation": "joy",
+                "hope": "joy",
+                "gratitude": "joy",
+                "confidence": "joy",
+                "neutral": "stress", # Use stress-relief for neutral focus
+                
+                # Negative / Distress
                 "fear": "anxiety",
                 "frustration": "anger",
+                "lonely": "loneliness",
                 "depressed": "sadness",
-                "lonely": "sadness"
+                "tired": "fatigue",
+                "exhausted": "burnout"
             }
             mapped_emotion = mapping.get(search_emotion, "stress")
             filtered = self._data[self._data['emotion'] == mapped_emotion]
