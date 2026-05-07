@@ -136,6 +136,30 @@ class GroqService:
             logger.error(f"Error in Groq sentiment analysis: {e}")
             return {"dominant_emotion": "neutral", "intensity": 0.5, "suggestions": ["Continue journaling to build patterns."]}
 
+    async def get_place_suggestions(self, dominant_emotion: str, intensity: float, interests: List[str]) -> List[str]:
+        """Suggest decompression places based on mood and interests"""
+        if not self.client:
+            return ["A quiet park.", "A cozy library.", "A local cafe."]
+            
+        try:
+            interest_str = ", ".join(interests) if interests else "nature and peace"
+            prompt = (
+                f"User feeling {dominant_emotion} (intensity {intensity*100}%). "
+                f"Interests: {interest_str}. "
+                "Suggest 3 specific types of places or activities where this user could decompress. "
+                "Return them as a simple list separated by newlines."
+            )
+            chat_completion = await self.client.chat.completions.create(
+                messages=[{"role": "user", "content": prompt}],
+                model="llama-3.3-70b-versatile",
+                max_tokens=100,
+            )
+            places = chat_completion.choices[0].message.content.strip().split('\n')
+            return [p.strip('- ').strip() for p in places if p.strip()][:3]
+        except Exception as e:
+            logger.error(f"Error in Groq place suggestions: {e}")
+            return ["A peaceful garden.", "A quiet museum.", "A scenic viewpoint."]
+
     async def _call_llm(self, system_message: str, user_message: str) -> str:
         """Generic helper for LLM chat completions"""
         if not self.client:

@@ -5,6 +5,7 @@ from app.core.security import get_current_user
 from app.core.database import get_database
 from app.services.emotional_tracking import emotional_tracking_engine
 from collections import defaultdict
+from app.services.groq_service import groq_service
 import statistics
 
 router = APIRouter()
@@ -111,7 +112,12 @@ async def get_analytics_summary(
     suggestions_task = groq_service.get_personalized_suggestions(dominant_emotion, current_wellness/100, (change + 100)/200)
     hangouts_task = groq_service.get_place_suggestions(dominant_emotion, current_wellness/100, interests)
     
-    insight, suggestions, hangouts = await asyncio.gather(insight_task, suggestions_task, hangouts_task)
+    # Async gather with exception handling
+    results = await asyncio.gather(insight_task, suggestions_task, hangouts_task, return_exceptions=True)
+    
+    insight = results[0] if not isinstance(results[0], Exception) else "Your mind is a neural masterpiece."
+    suggestions = results[1] if not isinstance(results[1], Exception) else ["Practice deep breathing."]
+    hangouts = results[2] if not isinstance(results[2], Exception) else ["A quiet park."]
     
     return {
         "wellness_index": round(current_wellness, 1),

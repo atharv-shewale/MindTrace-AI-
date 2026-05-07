@@ -34,13 +34,12 @@ class Settings(BaseSettings):
     WINDOW_SIZE: int = 3600  # 1 hour in seconds
     
     # CORS Origins - Whitelist for Netlify and Local
-    CORS_ORIGINS: List[str] = ["https://mindtrace-frontend.netlify.app", "https://mindtrace-ai.netlify.app", "http://localhost:3000"]
+    CORS_ORIGINS: Any = ["https://mindtrace-frontend.netlify.app", "https://mindtrace-ai.netlify.app", "http://localhost:3000"]
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Any) -> List[str]:
         if isinstance(v, str):
-            # Handle JSON list format
             if v.startswith("[") and v.endswith("]"):
                 try:
                     import json
@@ -49,7 +48,6 @@ class Settings(BaseSettings):
                         return [str(i).strip().rstrip('/') for i in parsed if i]
                 except Exception:
                     pass
-            # Handle comma-separated string format
             return [i.strip().rstrip('/') for i in v.split(",") if i.strip()]
         elif isinstance(v, list):
             return [str(i).strip().rstrip('/') for i in v if i]

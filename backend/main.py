@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
@@ -38,27 +38,35 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS middleware
-origins = [str(origin) for origin in settings.CORS_ORIGINS]
-allow_all = "*" in origins
+# Custom CORS Middleware for Production Stability
+@app.middleware("http")
+async def custom_cors_middleware(request, call_next):
+    if request.method == "OPTIONS":
+        origin = request.headers.get("Origin")
+        response = Response(status_code=200)
+        # Always echo the origin for credentials support in production
+        response.headers["Access-Control-Allow-Origin"] = origin if origin else "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+        response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Accept, X-Requested-With"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        return response
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[] if allow_all else origins,
-    allow_origin_regex=".*" if allow_all else None,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    response = await call_next(request)
+    origin = request.headers.get("Origin")
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+        response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Accept, X-Requested-With"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 
 @app.middleware("http")
 async def log_requests(request, call_next):
     logger.info(f"Request: {request.method} {request.url.path}")
-    return await call_next(request)
-
-@app.options("/{path:path}")
-async def options_handler(path: str):
-    return {"message": "ok"}
+    logger.info(f"Headers: {dict(request.headers)}")
+    response = await call_next(request)
+    logger.info(f"Response status: {response.status_code}")
+    return response
 
 @app.get("/")
 async def root():
