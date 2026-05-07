@@ -40,7 +40,8 @@ const AppContent = () => {
   }, [theme]);
 
   const [negativeStreak, setNegativeStreak] = React.useState(0);
-  const NEGATIVE_STREAK_THRESHOLD = 8;
+  const negativeStartTimeRef = React.useRef(null);
+  const SUSTAINED_NEGATIVE_THRESHOLD = 20000; // 20 seconds in ms
 
   // Local Mood Sync Listener (Zero Latency)
   React.useEffect(() => {
@@ -54,21 +55,48 @@ const AppContent = () => {
         timestamp: timestamp || new Date() 
       });
 
-      // Streak detection
-      const negativeList = ['Sadness', 'Sad', 'Anger', 'Fear', 'Frustration', 'Anxiety', 'Depressed'];
+      // Sustained distress detection (20s window)
+      const negativeList = ['Sadness', 'Sad', 'Anger', 'Fear', 'Frustration', 'Anxiety', 'Depressed', 'Lonely'];
       if (negativeList.includes(formattedEmotion)) {
-        setNegativeStreak(prev => {
-          const newStreak = prev + 1;
-          if (newStreak >= NEGATIVE_STREAK_THRESHOLD) {
-            setShowFunnyVideo(true);
-            return 0;
+        if (!negativeStartTimeRef.current) {
+          negativeStartTimeRef.current = Date.now();
+        } else {
+          const elapsed = Date.now() - negativeStartTimeRef.current;
+          if (elapsed >= SUSTAINED_NEGATIVE_THRESHOLD) {
+            triggerIntervention(formattedEmotion);
+            negativeStartTimeRef.current = null; // Reset after trigger
           }
-          return newStreak;
-        });
+        }
       } else {
-        setNegativeStreak(0);
+        negativeStartTimeRef.current = null;
       }
     };
+
+    const triggerIntervention = async (emotion) => {
+      try {
+        // Fetch personalized video from our new backend service
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/sos/suggest-video?emotion=${emotion}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        if (data.video_url) {
+          // Open in a small floating popup window
+          const width = 600;
+          const height = 400;
+          const left = (window.screen.width / 2) - (width / 2);
+          const top = (window.screen.height / 2) - (height / 2);
+          
+          window.open(
+            data.video_url, 
+            'MindTraceIntervention', 
+            `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
+          );
+        }
+      } catch (err) {
+        console.error('Failed to trigger intervention:', err);
+        setShowFunnyVideo(true); // Fallback to internal modal
+      }
 
     window.addEventListener('mood-update', handleMoodUpdate);
     return () => window.removeEventListener('mood-update', handleMoodUpdate);

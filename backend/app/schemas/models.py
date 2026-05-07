@@ -100,6 +100,8 @@ class JournalEntryCreate(BaseModel):
     user_id: Optional[str] = None
     emotions_detected: Optional[List[str]] = None
     mood_intensity: Optional[float] = None
+    audio_score: Optional[float] = None
+    video_score: Optional[float] = None
 
     class Config:
         extra = "ignore"

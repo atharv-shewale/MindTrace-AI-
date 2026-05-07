@@ -38,8 +38,16 @@ async def create_journal_entry(
     # 3. Merge findings: Prioritize Groq's high-accuracy analysis, fallback to HF
     dominant_emotion = ai_analysis.get("dominant_emotion", hf_analysis["dominant_emotion"]).lower()
     
-    # Use Groq's calculated intensity if available, otherwise use HF's confidence score
-    intensity = ai_analysis.get("intensity", hf_analysis["intensity"])
+    # 4. Multi-Modal Scoring Integration
+    # Calculate text positivity score
+    text_positivity = 1.0 - hf_analysis["intensity"] if dominant_emotion in ["sadness", "anger", "fear", "depressed", "anxiety"] else hf_analysis["intensity"]
+    
+    # Use provided scores or fallback to text score
+    audio_score = entry_data.audio_score if entry_data.audio_score is not None else text_positivity
+    video_score = entry_data.video_score if entry_data.video_score is not None else text_positivity
+    
+    # FINAL HOLISTIC SCORE (Average of Text, Audio, and Video)
+    final_positivity_score = (text_positivity + audio_score + video_score) / 3.0
     
     # Create entry document
     entry_doc = {
@@ -48,12 +56,13 @@ async def create_journal_entry(
         "emotions_detected": [dominant_emotion],
         "all_scores": hf_analysis["all_emotions"],
         "dominant_emotion": dominant_emotion,
-        "dominant_intensity": intensity,
-        "mood_intensity": intensity,
-        "sentiment": ai_analysis.get("dominant_emotion", "Neutral"),
-        "positivity": 1.0 - intensity if dominant_emotion in ["sadness", "anger", "fear"] else intensity,
+        "dominant_intensity": ai_analysis.get("intensity", hf_analysis["intensity"]),
+        "text_score": text_positivity,
+        "audio_score": audio_score,
+        "video_score": video_score,
+        "positivity": final_positivity_score, # This is now the average score
+        "mood_intensity": ai_analysis.get("intensity", hf_analysis["intensity"]),
         "suggestions": ai_analysis.get("suggestions", []),
-        "embeddings": [], # Can be updated if needed
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow()
     }
@@ -72,8 +81,9 @@ async def create_journal_entry(
         )
         
         # SOS / Guardian Alert Logic
-        CRITICAL_EMOTIONS = ["sadness", "fear", "anger", "depressed", "anxiety"]
-        if dominant_emotion in CRITICAL_EMOTIONS and intensity > 0.8:
+        CRITICAL_EMOTIONS = ["sadness", "fear", "anger", "depressed", "anxiety", "frustration", "lonely"]
+        # Trigger if holistic positivity is very low (< 0.3) OR text intensity is critical
+        if (dominant_emotion in CRITICAL_EMOTIONS and final_positivity_score < 0.3) or (ai_analysis.get("intensity", 0) > 0.9):
             user = await db.users.find_one({"_id": ObjectId(user_id)})
             if user and user.get("guardian_email"):
                 from app.services.alert_service import alert_service
@@ -81,7 +91,7 @@ async def create_journal_entry(
                     user_name=user.get("name", "User"),
                     guardian_email=user["guardian_email"],
                     emotion=dominant_emotion,
-                    intensity=intensity,
+                    intensity=1.0 - final_positivity_score, # Use distress intensity
                     content_snippet=entry_data.content[:100]
                 )
 

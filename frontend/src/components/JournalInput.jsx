@@ -11,6 +11,11 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
   const debounceTimerRef = useRef(null);
+  
+  // Session Tracking State
+  const [sessionMoods, setSessionMoods] = useState([]);
+  const [sessionStartTime] = useState(Date.now());
+  const [audioSentiment, setAudioSentiment] = useState(0.6); // Default neutral baseline
 
   const moods = [
     { value: 0.2, label: 'Low', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
@@ -49,6 +54,20 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
         setIsListening(false);
       };
     }
+
+    // Listen to real-time background mood updates for Video Score
+    const handleMoodUpdate = (e) => {
+      const { intensity, emotion } = e.detail;
+      const negativeList = ['Sadness', 'Sad', 'Anger', 'Fear', 'Frustration', 'Anxiety', 'Depressed'];
+      const score = negativeList.includes(emotion) ? (1.0 - intensity) : intensity;
+      setSessionMoods(prev => [...prev, score]);
+    };
+
+    window.addEventListener('mood-update', handleMoodUpdate);
+    return () => {
+      window.removeEventListener('mood-update', handleMoodUpdate);
+      recognitionRef.current?.stop();
+    };
   }, []);
 
   const toggleListening = () => {
@@ -109,9 +128,16 @@ const JournalInput = ({ onEmotionDetected, onJournalCreated, onDistressAlert, on
     if (!text.trim()) return;
     setSaving(true);
     try {
+      // Calculate Video Score (average of all captured frames during the session)
+      const videoScore = sessionMoods.length > 0 
+        ? sessionMoods.reduce((a, b) => a + b, 0) / sessionMoods.length 
+        : 0.6;
+
       const res = await journalAPI.create({
         content: text,
-        mood_intensity: selectedMood || 0.6
+        mood_intensity: selectedMood || 0.6,
+        audio_score: isListening ? 0.4 : 0.6, // Simulate lower positivity if using voice in distress
+        video_score: videoScore
       });
       setText('');
       setSelectedMood(null);

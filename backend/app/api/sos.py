@@ -155,3 +155,19 @@ async def get_safety_resources():
     }
     
     return resources
+    
+@router.get("/suggest-video")
+async def suggest_intervention_video(
+    emotion: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Suggest a personalized video intervention from the CSV dataset"""
+    from app.services.video_service import video_service
+    
+    video_url = video_service.get_video_for_emotion(emotion)
+    
+    return {
+        "video_url": video_url,
+        "emotion": emotion,
+        "category": emotion # Simplify for now
+    }

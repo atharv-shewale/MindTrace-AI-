@@ -113,8 +113,31 @@ class GroqService:
                 {"title": "Digital Detox", "desc": "Step away from screens for 15 minutes.", "type": "tech"}
             ]
 
-    async def analyze_journal_sentiment(self, text: str, hf_context: dict = None) -> dict:
-        """Perform high-accuracy sentiment and emotional analysis on journal text using advanced psychological framing."""
+    async def analyze_journal_sentiment(self, text: str, hf_context: dict = None):
+        """
+        Advanced Psychological Synthesis using Llama-3-70b.
+        Combines raw NLP markers with deep contextual understanding to provide 
+        extremely accurate emotional mapping.
+        """
+        system_prompt = """
+        You are the MindTrace AI+ Core Synthesis Engine, a clinical-grade psychological analyzer.
+        Your task is to analyze the provided journal text with maximum precision.
+        
+        Advanced Methodology:
+        1. Contextual Mapping: Don't just look for keywords. Understand the underlying tone and temporal stability of the user's state.
+        2. Sentiment Decomposition: Distinguish between situational frustration and systemic distress.
+        3. Multi-Factor Categorization: Map the text into one of these exact categories: 
+           [Joy, Sadness, Anger, Fear, Anxiety, Surprise, Neutral, Frustration, Depressed, Lonely].
+        
+        Input Format: A user's journal entry.
+        Output Format: STRICT JSON with keys:
+        - dominant_emotion (string)
+        - intensity (float 0.0 - 1.0)
+        - suggestions (list of 3 precise, clinically-sound wellness protocols)
+        - insight (a 1-sentence psychological synthesis of their current state)
+        - escalation_score (float 0.0 - 1.0, probability of emotional crisis)
+        """
+        
         if not self.client:
             return {"dominant_emotion": "neutral", "intensity": 0.5, "suggestions": ["Record your thoughts more often."]}
 
@@ -126,8 +149,6 @@ class GroqService:
             prompt = (
                 f"Analyze the following journal entry for deep emotional patterns, subtext, and underlying psychological states: \"{text}\"\n\n"
                 f"{hf_hint}\n\n"
-                "Task: Perform a highly precise psychological evaluation.\n"
-                "1. Identify the exact 'dominant_emotion' (e.g., joy, sadness, anger, anxiety, peace, frustration, grief, hope).\n"
                 "2. Calculate the 'intensity' of this emotion from 0.0 to 1.0 based on the extremity of the language used.\n"
                 "3. Provide 3 highly personalized, actionable wellness suggestions tailored EXACTLY to the nuances of their entry.\n"
                 "Format strictly as JSON: {\"dominant_emotion\": \"...\", \"intensity\": 0.0, \"suggestions\": [\"...\", \"...\", \"...\"]}"
