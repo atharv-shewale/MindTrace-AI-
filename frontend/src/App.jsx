@@ -81,16 +81,16 @@ const AppContent = () => {
         const data = await response.json();
         
         if (data.video_url) {
-          // Open in a small floating popup window
-          const width = 600;
-          const height = 400;
-          const left = (window.screen.width / 2) - (width / 2);
-          const top = (window.screen.height / 2) - (height / 2);
+          // Open in a small floating popup window in the bottom-right corner
+          const width = 450;
+          const height = 320;
+          const left = window.screen.width - width - 40;
+          const top = window.screen.height - height - 100; // Account for taskbar
           
           window.open(
             data.video_url, 
             'MindTraceIntervention', 
-            `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
+            `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,resizable=no`
           );
         }
       } catch (err) {
