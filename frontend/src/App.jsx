@@ -28,6 +28,7 @@ const AppContent = () => {
   const [onboardingComplete, setOnboardingComplete] = React.useState(false);
   const [showFunnyVideo, setShowFunnyVideo] = React.useState(false);
   const [currentEmotionData, setCurrentEmotionData] = React.useState({ emotion: 'Neutral', intensity: 0, timestamp: new Date() });
+  const [intervention, setIntervention] = React.useState({ active: false, videoUrl: '', videoId: '', isChannel: false });
   const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'dark');
 
   React.useEffect(() => {
@@ -79,55 +80,20 @@ const AppContent = () => {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        
+      
         if (data.video_url) {
-          const isChannel = data.video_url.includes('@');
-          const videoId = data.video_url.split('v=')[1]?.split('&')[0];
-          const embedUrl = videoId 
-            ? `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1` 
-            : null;
-
-          // VERY small pop up in the corner
-          const width = 300;
-          const height = 180;
-          const left = window.screen.width - width - 15;
-          const top = window.screen.height - height - 55;
-          
-          const popup = window.open(
-            '', 
-            'MindTraceIntervention', 
-            `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,resizable=no`
-          );
-
-          if (popup) {
-            if (isChannel || !embedUrl) {
-              // If it's a channel, we can't embed it, so we redirect the tiny window to the channel directly
-              popup.location.href = data.video_url;
-            } else {
-              popup.document.write(`
-                <html>
-                  <body style="margin:0;padding:0;background:#000;overflow:hidden;font-family:sans-serif;">
-                    <div style="position:absolute;top:5px;left:5px;background:rgba(99,102,241,0.9);color:white;padding:2px 8px;border-radius:6px;font-size:8px;font-weight:bold;z-index:10;letter-spacing:0.5px;">
-                      NEURAL RESET
-                    </div>
-                    <iframe 
-                      width="100%" 
-                      height="100%" 
-                      src="${embedUrl}" 
-                      frameborder="0" 
-                      allow="autoplay; encrypted-media" 
-                      allowfullscreen>
-                    </iframe>
-                  </body>
-                </html>
-              `);
-            }
-          }
+          setIntervention({
+            active: true,
+            videoUrl: data.video_url,
+            videoId: data.video_url.split('v=')[1]?.split('&')[0],
+            isChannel: data.video_url.includes('@')
+          });
         }
       } catch (err) {
         console.error('Failed to trigger intervention:', err);
         setShowFunnyVideo(true); // Fallback to internal modal
       }
+    };
 
     window.addEventListener('mood-update', handleMoodUpdate);
     return () => window.removeEventListener('mood-update', handleMoodUpdate);
@@ -388,25 +354,75 @@ const AppContent = () => {
         {currentPage === 'practice' && (
           <DailyPractice onBack={() => setCurrentPage('dashboard')} />
         )}
-      </main>
 
-      {/* Distress Mode Modal */}
-      {distressMode && (
-        <DistressMode
-          isActive={distressMode}
-          emotion={distressData.emotion}
-          intensity={distressData.intensity}
-          onClose={() => setDistressMode(false)}
-          sosContacts={user?.sos_contacts || []}
-        />
+      {/* Floating Action Button (Optional, can be used for manual distress trigger) */}
+      <div className="fixed bottom-8 left-8 z-50">
+        <button 
+          onClick={() => setDistressMode(true)}
+          className="w-14 h-14 bg-red-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.5)] transition-all hover:scale-110"
+          title="Manual Neural Alert"
+        >
+          <Brain size={24} />
+        </button>
+      </div>
+
+      {/* Neural Intervention Widget (Ad-style Pop-up) */}
+      {intervention.active && (
+        <div className="fixed bottom-6 right-6 w-[320px] h-[200px] z-[9999] animate-in slide-in-from-right duration-500">
+          <div className="relative w-full h-full bg-[#111] rounded-xl border border-white/10 shadow-2xl overflow-hidden group">
+            {/* Header / Close */}
+            <div className="absolute top-0 left-0 right-0 p-2 bg-gradient-to-b from-black/80 to-transparent z-10 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-[10px] font-bold tracking-widest text-indigo-400 ml-2">NEURAL RESET</span>
+              <button 
+                onClick={() => setIntervention({ ...intervention, active: false })}
+                className="p-1 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            {/* Video Content */}
+            {intervention.isChannel ? (
+              <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-indigo-900/20 text-center">
+                <p className="text-xs text-white/70 mb-3">Intervention Suggested</p>
+                <a 
+                  href={intervention.videoUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-[10px] font-bold tracking-wider transition-all"
+                >
+                  OPEN RESET CHANNEL
+                </a>
+              </div>
+            ) : (
+              <iframe 
+                width="100%" 
+                height="100%" 
+                src={`https://www.youtube.com/embed/${intervention.videoId}?autoplay=1&modestbranding=1&controls=1`}
+                frameBorder="0" 
+                allow="autoplay; encrypted-media" 
+                allowFullScreen
+              ></iframe>
+            )}
+          </div>
+        </div>
       )}
 
-      {/* Mood Uplift Protocol */}
-      <FunnyVideoIntervention 
-        isOpen={showFunnyVideo} 
-        onClose={() => setShowFunnyVideo(false)} 
-        emotion={currentEmotionData.emotion} 
-      />
+      {/* Distress Overlays */}
+      {distressMode && (
+        <DistressMode 
+          data={distressData} 
+          onClose={() => setDistressMode(false)} 
+        />
+      )}
+      
+      {showFunnyVideo && (
+        <FunnyVideoIntervention 
+          onClose={() => setShowFunnyVideo(false)}
+          emotion={currentEmotionData.emotion}
+        />
+      )}
+      </main>
 
       {/* Global Passive Tracking */}
       <BackgroundEmotionTracker enabled={user?.background_tracking_enabled} />
